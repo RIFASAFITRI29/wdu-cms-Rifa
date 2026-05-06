@@ -19,16 +19,14 @@ export const authService = {
     return data;
   },
   
-  logout: async () => {
-    try {
-      await api.post('/auth/logout');
-    } catch (e) {
-      // Ignore logout error
-    } finally {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      window.location.href = '/admin/login';
-    }
+  logout: () => {
+    // Fire and forget the backend logout request
+    api.post('/auth/logout').catch(() => {});
+    
+    // Clear tokens and redirect immediately
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    window.location.href = '/admin/login';
   },
 
   getMe: async () => {

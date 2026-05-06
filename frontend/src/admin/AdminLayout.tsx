@@ -26,9 +26,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       }
     };
     fetchUnread();
+    
+    // Listen for manual refresh events
+    window.addEventListener('refreshUnread', fetchUnread);
+    
     // Refresh every 30 seconds for real-time feel
     const interval = setInterval(fetchUnread, 30000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('refreshUnread', fetchUnread);
+    };
   }, [location.pathname]); // Re-fetch on navigation
 
   const allNavItems = [
@@ -57,7 +64,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className={`min-h-screen transition-colors duration-500 flex ${theme === 'dark' ? 'bg-zinc-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
       {/* Sidebar */}
-      <aside className={`w-64 border-r flex flex-col fixed h-full z-40 transition-colors duration-500 ${
+      <aside className={`w-56 border-r flex flex-col fixed h-full z-40 transition-colors duration-500 ${
         theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'
       }`}>
         <div className="p-6">
@@ -70,24 +77,92 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </span>
           </Link>
         </div>
-        <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                  isActive
-                    ? theme === 'dark' ? 'bg-primary/20 text-primary font-bold shadow-[0_0_20px_rgba(21,128,61,0.15)]' : 'bg-green-50 text-green-700 font-bold'
-                    : theme === 'dark' ? 'text-zinc-400 hover:bg-zinc-800 hover:text-primary' : 'text-gray-500 hover:bg-gray-50 hover:text-green-600'
-                }`}
-              >
-                <span className="material-symbols-outlined text-xl">{item.icon}</span>
-                <span className="text-sm">{item.name}</span>
-              </Link>
-            );
-          })}
+        <nav className="flex-1 px-4 py-4 space-y-8 overflow-y-auto custom-scrollbar">
+          {/* Main Group */}
+          <div>
+            <p className="px-4 mb-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">Ringkasan</p>
+            <div className="space-y-1">
+              {navItems.filter(i => ['Dashboard', 'Profil Saya'].includes(i.name)).map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all group ${
+                      isActive
+                        ? theme === 'dark' ? 'bg-primary/20 text-primary font-bold shadow-[0_0_20px_rgba(21,128,61,0.1)]' : 'bg-green-50 text-green-700 font-bold'
+                        : theme === 'dark' ? 'text-zinc-400 hover:bg-zinc-800 hover:text-primary' : 'text-gray-500 hover:bg-gray-50 hover:text-green-600'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                      isActive ? 'bg-primary text-zinc-950 shadow-lg' : 'bg-zinc-800/50 text-zinc-500 group-hover:bg-primary/20 group-hover:text-primary'
+                    }`}>
+                      <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                    </div>
+                    <span className="text-xs font-bold">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Content Group */}
+          <div>
+            <p className="px-4 mb-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">Manajemen Konten</p>
+            <div className="space-y-1">
+              {navItems.filter(i => !['Dashboard', 'Profil Saya', 'Manajemen User', 'Pengaturan Situs'].includes(i.name)).map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all group ${
+                      isActive
+                        ? theme === 'dark' ? 'bg-primary/20 text-primary font-bold shadow-[0_0_20px_rgba(21,128,61,0.1)]' : 'bg-green-50 text-green-700 font-bold'
+                        : theme === 'dark' ? 'text-zinc-400 hover:bg-zinc-800 hover:text-primary' : 'text-gray-500 hover:bg-gray-50 hover:text-green-600'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                      isActive ? 'bg-primary text-zinc-950 shadow-lg' : 'bg-zinc-800/50 text-zinc-500 group-hover:bg-primary/20 group-hover:text-primary'
+                    }`}>
+                      <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                    </div>
+                    <span className="text-xs font-bold">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* System Group (Only for Super Admin) */}
+          {isSuperAdmin && (
+            <div>
+              <p className="px-4 mb-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">Konfigurasi</p>
+              <div className="space-y-1">
+                {navItems.filter(i => ['Manajemen User', 'Pengaturan Situs'].includes(i.name)).map((item) => {
+                  const isActive = location.pathname === item.path;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all group ${
+                        isActive
+                          ? theme === 'dark' ? 'bg-primary/20 text-primary font-bold shadow-[0_0_20px_rgba(21,128,61,0.1)]' : 'bg-green-50 text-green-700 font-bold'
+                          : theme === 'dark' ? 'text-zinc-400 hover:bg-zinc-800 hover:text-primary' : 'text-gray-500 hover:bg-gray-50 hover:text-green-600'
+                      }`}
+                    >
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                        isActive ? 'bg-primary text-zinc-950 shadow-lg' : 'bg-zinc-800/50 text-zinc-500 group-hover:bg-primary/20 group-hover:text-primary'
+                      }`}>
+                        <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                      </div>
+                      <span className="text-xs font-bold">{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </nav>
         <div className={`p-6 border-t space-y-4 ${theme === 'dark' ? 'border-zinc-800' : 'border-gray-100'}`}>
           <Link to="/" className={`flex items-center gap-2 text-xs font-bold transition-colors ${theme === 'dark' ? 'text-zinc-500 hover:text-primary' : 'text-gray-400 hover:text-green-600'}`}>
@@ -105,9 +180,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 ml-64 flex flex-col">
+      <div className="flex-1 ml-56 flex flex-col">
         {/* Header */}
-        <header className={`h-20 border-b flex items-center justify-between px-8 sticky top-0 z-30 transition-colors duration-500 backdrop-blur-md ${
+        <header className={`h-16 border-b flex items-center justify-between px-6 sticky top-0 z-30 transition-colors duration-500 backdrop-blur-md ${
           theme === 'dark' ? 'bg-zinc-950/80 border-zinc-800' : 'bg-white/80 border-gray-100'
         }`}>
           <div className="flex items-center gap-4">
@@ -198,7 +273,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <main className="p-8">
+        <main className="p-6">
           {children}
         </main>
       </div>

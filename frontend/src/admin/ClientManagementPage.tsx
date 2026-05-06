@@ -18,6 +18,7 @@ export default function ClientManagementPage() {
     url: ''
   });
   const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
+  const [draggedIndex, setDraggedIndex] = React.useState<number | null>(null);
 
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -83,6 +84,40 @@ export default function ClientManagementPage() {
       setIsUploading(false);
     }
   };
+ 
+   const handleDragStart = (index: number) => {
+     setDraggedIndex(index);
+   };
+ 
+   const handleDragOver = (e: React.DragEvent) => {
+     e.preventDefault();
+   };
+ 
+   const handleDrop = async (index: number) => {
+     if (draggedIndex === null || draggedIndex === index) return;
+ 
+     const newClients = [...clients];
+     const draggedItem = newClients[draggedIndex];
+     newClients.splice(draggedIndex, 1);
+     newClients.splice(index, 0, draggedItem);
+ 
+     // Update locally for instant feedback
+     setClients(newClients);
+     setDraggedIndex(null);
+ 
+     // Prepare items for backend update
+     const reorderItems = newClients.map((c, i) => ({
+       id: c.id,
+       order: i + 1
+     }));
+ 
+     try {
+       await clientService.reorder(reorderItems);
+     } catch (err: any) {
+       console.error('Failed to save order');
+       fetchClients(); // Rollback if failed
+     }
+   };
 
 
   const handleReset = async () => {
@@ -122,13 +157,22 @@ export default function ClientManagementPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
            {isLoading ? (
              <div className="col-span-full py-32 text-center text-zinc-500 font-bold uppercase tracking-widest text-xs animate-pulse">Memuat Data Klien...</div>
-           ) : clients.map(client => (
+           ) : clients.map((client, index) => (
              <div 
                key={client.id} 
-               className={`group aspect-[4/3] rounded-[2rem] border p-8 flex flex-col items-center justify-center relative transition-all duration-700 hover:shadow-2xl hover:-translate-y-2 ${
+               draggable
+               onDragStart={() => handleDragStart(index)}
+               onDragOver={handleDragOver}
+               onDrop={() => handleDrop(index)}
+               className={`group aspect-[4/3] rounded-[2rem] border p-8 flex flex-col items-center justify-center relative transition-all duration-700 hover:shadow-2xl hover:-translate-y-2 cursor-grab active:cursor-grabbing ${
                  theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-100 shadow-sm'
-               }`}
+               } ${draggedIndex === index ? 'opacity-20 scale-95' : ''}`}
              >
+                <div className="absolute top-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                   <div className="bg-black/50 backdrop-blur-md text-white/50 p-1.5 rounded-lg">
+                      <span className="material-symbols-outlined text-xs">drag_indicator</span>
+                   </div>
+                </div>
                 <img 
                   src={client.url} 
                   alt={client.name} 

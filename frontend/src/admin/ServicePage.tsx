@@ -18,6 +18,7 @@ export default function ServicePage() {
 
   const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [draggedIndex, setDraggedIndex] = React.useState<number | null>(null);
 
 
   React.useEffect(() => {
@@ -88,6 +89,38 @@ export default function ServicePage() {
       setIsSaving(false);
     }
   };
+ 
+   const handleDragStart = (index: number) => {
+     setDraggedIndex(index);
+   };
+ 
+   const handleDragOver = (e: React.DragEvent) => {
+     e.preventDefault();
+   };
+ 
+   const handleDrop = async (index: number) => {
+     if (draggedIndex === null || draggedIndex === index) return;
+ 
+     const newServices = [...services];
+     const draggedItem = newServices[draggedIndex];
+     newServices.splice(draggedIndex, 1);
+     newServices.splice(index, 0, draggedItem);
+ 
+     setServices(newServices);
+     setDraggedIndex(null);
+ 
+     const reorderItems = newServices.map((s, i) => ({
+       id: s.id,
+       order: i + 1
+     }));
+ 
+     try {
+       await serviceDataService.reorder(reorderItems);
+     } catch (error) {
+       console.error('Failed to reorder services');
+       fetchServices();
+     }
+   };
 
 
   return (
@@ -110,8 +143,8 @@ export default function ServicePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
            {isLoading ? (
              <div className="col-span-full py-20 text-center text-zinc-500 font-bold uppercase tracking-widest text-xs animate-pulse">Menyelaraskan Portofolio Layanan...</div>
-           ) : services.map((service, i) => (
-             <div key={service.id} className={`p-10 rounded-[3rem] border transition-all duration-500 group relative overflow-hidden ${
+           ) : services.map((service, index) => (
+             <div key={service.id} draggable onDragStart={() => handleDragStart(index)} onDragOver={handleDragOver} onDrop={() => handleDrop(index)} className={`p-10 rounded-[3rem] border transition-all duration-500 group relative overflow-hidden ${
                theme === 'dark' ? 'bg-zinc-900 border-zinc-800 hover:border-primary/50' : 'bg-white border-gray-100 shadow-xl hover:shadow-2xl'
              }`}>
 
@@ -134,7 +167,7 @@ export default function ServicePage() {
                         <span className={`w-2 h-2 rounded-full ${service.isActive ? 'bg-primary' : 'bg-zinc-700'}`}></span>
                         <span className={`text-[10px] font-black uppercase tracking-widest ${theme === 'dark' ? 'text-zinc-600' : 'text-gray-400'}`}>{service.isActive ? 'Aktif' : 'Non-aktif'}</span>
                       </div>
-                      <span className="text-[10px] font-black text-zinc-700 uppercase tracking-widest">Order: #{i + 1}</span>
+                      <span className="text-[10px] font-black text-zinc-700 uppercase tracking-widest">Order: #{index + 1}</span>
                    </div>
                 </div>
              </div>

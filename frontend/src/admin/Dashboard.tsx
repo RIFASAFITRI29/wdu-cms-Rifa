@@ -115,7 +115,8 @@ export default function AdminDashboard() {
           target: m.name,
           time: m.createdAt,
           icon: 'mail',
-          color: 'bg-amber-500 text-white'
+          color: 'bg-amber-500 text-white',
+          isRead: m.isRead
         })),
         ...(Array.isArray(servicesList) ? servicesList.slice(0, 5) : []).map(s => ({
           id: s.id,
@@ -205,14 +206,19 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="space-y-12 pb-20 max-w-7xl mx-auto">
+      <div className="relative min-h-screen">
+        {/* Background Decorative Blobs */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10 animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-[100px] -z-10"></div>
+        
+        <div className="space-y-12 pb-20 max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
           <div className="reveal-up">
-            <h1 className={`text-5xl font-black tracking-tight ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Halo, {user.name.split(' ')[0]}!
+            <h1 className={`text-5xl md:text-6xl font-black tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-gray-950'}`}>
+              Halo, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">{user.name.split(' ')[0]}</span>! 👋
             </h1>
-            <p className={`text-sm font-bold mt-2 uppercase tracking-[0.4em] ${theme === 'dark' ? 'text-primary' : 'text-green-600'}`}>Overview Intelligence Data</p>
+            <p className={`text-[10px] font-black mt-4 uppercase tracking-[0.6em] ${theme === 'dark' ? 'text-primary/60' : 'text-emerald-700/60'}`}>Intelligence Data Hub v2.0</p>
           </div>
           
           <div className="flex flex-wrap gap-4">
@@ -240,32 +246,84 @@ export default function AdminDashboard() {
            </div>
         </header>
 
+        {/* Quick Insights Banner */}
+        <div className={`p-1 rounded-[2.5rem] bg-gradient-to-r from-emerald-600 via-primary to-green-400 shadow-2xl shadow-primary/20 reveal-up`} style={{ animationDelay: '0.1s' }}>
+           <div className={`px-10 py-12 rounded-[2.4rem] flex flex-col md:flex-row items-center justify-between gap-8 ${theme === 'dark' ? 'bg-zinc-900/90' : 'bg-white/90'} backdrop-blur-md`}>
+              <div className="max-w-xl">
+                 <h2 className={`text-3xl font-black tracking-tight mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Analisis Performa <span className="text-primary italic">Real-time</span>
+                 </h2>
+                 <p className={`text-sm font-medium leading-relaxed ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-500'}`}>
+                    Sistem Anda saat ini memiliki <span className="font-black text-primary">{stats[1].value} layanan aktif</span> dan sedang memproses data intelijen secara otomatis. Gunakan menu navigasi untuk mengelola seluruh aspek website Anda.
+                 </p>
+              </div>
+              <div className="flex items-center gap-6 shrink-0">
+                 <div className="text-center">
+                    <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-400'}`}>UPTIME</p>
+                    <p className={`text-2xl font-black ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>99.9%</p>
+                 </div>
+                 <div className="w-px h-10 bg-zinc-200 dark:bg-zinc-800"></div>
+                 <div className="text-center">
+                    <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-400'}`}>SISTEM</p>
+                    <div className="flex items-center gap-2">
+                       <div className="w-2 h-2 bg-primary rounded-full animate-ping"></div>
+                       <p className={`text-2xl font-black ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>STABIL</p>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+
         {/* Top Statistics Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {stats.map((stat, i) => (
             <div 
               key={i} 
               onClick={() => navigate(stat.path)}
-              className={`p-10 rounded-[3rem] border transition-all duration-500 hover:-translate-y-2 group cursor-pointer ${
-                theme === 'dark' ? 'bg-zinc-900 border-zinc-800 hover:border-primary/30' : 'bg-white border-gray-100 shadow-xl shadow-zinc-200/40'
+              className={`relative overflow-hidden p-8 rounded-[2.5rem] border transition-all duration-500 hover:-translate-y-2 group cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-zinc-900/50 backdrop-blur-xl border-zinc-800 hover:border-primary/50 shadow-2xl shadow-black/20' 
+                  : 'bg-white border-gray-100 shadow-xl shadow-zinc-200/30 hover:border-green-200'
               }`}
             >
-              <div className="flex justify-between items-start mb-8">
-                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-6 ${
-                   theme === 'dark' ? 'bg-zinc-800 text-primary' : 'bg-green-50 text-green-600'
-                 }`}>
-                    <span className="material-symbols-outlined text-3xl">{stat.icon}</span>
-                 </div>
-                 <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${
-                   stat.trend.includes('Baru') 
-                    ? 'bg-amber-500/10 text-amber-500' 
-                    : 'bg-green-500/10 text-green-500'
-                 }`}>
-                    {stat.trend}
-                 </span>
+              {/* Background Decorative Element */}
+              <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full blur-[40px] opacity-10 transition-all duration-700 group-hover:scale-150 group-hover:opacity-20 ${
+                stat.color.split(' ')[1].replace('text-', 'bg-')
+              }`}></div>
+
+              <div className="relative z-10">
+                <div className="flex justify-between items-start mb-6">
+                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:rotate-[10deg] group-hover:scale-110 shadow-lg ${
+                     theme === 'dark' ? 'bg-zinc-800 text-primary shadow-black/40' : 'bg-green-50 text-green-600 shadow-green-100'
+                   }`}>
+                      <span className="material-symbols-outlined text-3xl">{stat.icon}</span>
+                   </div>
+                   <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-colors ${
+                     theme === 'dark' ? 'bg-zinc-950/50 border-zinc-800' : 'bg-gray-50 border-gray-100'
+                   }`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${stat.trend.includes('Baru') || stat.trend === '0' ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">
+                         {stat.trend}
+                      </span>
+                   </div>
+                </div>
+                
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500/80 mb-2">{stat.label}</p>
+                <div className="flex items-baseline gap-2">
+                  <h3 className={`text-4xl font-black tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-gray-950'}`}>{stat.value}</h3>
+                  <span className="material-symbols-outlined text-zinc-400 text-lg opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">arrow_forward</span>
+                </div>
+
+                {/* Bottom Progress Bar Decoration */}
+                <div className="mt-6 h-1 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                   <div 
+                     className={`h-full transition-all duration-1000 delay-300 ${
+                       stat.color.split(' ')[1].replace('text-', 'bg-')
+                     }`}
+                     style={{ width: stat.value === '0' ? '5%' : '65%' }}
+                   ></div>
+                </div>
               </div>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2">{stat.label}</p>
-              <h3 className={`text-4xl font-black ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stat.value}</h3>
             </div>
           ))}
         </div>
@@ -339,10 +397,10 @@ export default function AdminDashboard() {
                     />
                  </svg>
                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className={`text-3xl font-black ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <span className={`text-4xl font-black tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-gray-950'}`}>
                        {messageStats.total > 0 ? Math.round((messageStats.read / messageStats.total) * 100) : 0}%
                     </span>
-                    <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Tertangani</span>
+                    <span className="text-[8px] font-black text-zinc-500 uppercase tracking-[0.3em] mt-1">Selesai</span>
                  </div>
               </div>
 
@@ -379,8 +437,8 @@ export default function AdminDashboard() {
              <div className="space-y-4">
                 {isLoading ? (
                   <div className="py-20 text-center animate-pulse text-zinc-500 font-black text-xs uppercase tracking-widest">Sinkronisasi Data...</div>
-                ) : auditLogs.filter(a => a.type === 'message').length > 0 ? (
-                  auditLogs.filter(a => a.type === 'message').slice(0, 3).map((msg, i) => (
+                ) : auditLogs.filter(a => a.type === 'message' && !a.isRead).length > 0 ? (
+                  auditLogs.filter(a => a.type === 'message' && !a.isRead).slice(0, 3).map((msg, i) => (
                     <div 
                       key={i}
                       className={`p-8 rounded-[2.5rem] border flex items-center gap-8 transition-all hover:translate-x-3 ${
@@ -398,7 +456,12 @@ export default function AdminDashboard() {
                        </div>
                        <div className="text-right hidden sm:block">
                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{msg.time}</p>
-                          <span className="inline-block mt-2 w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_#16a34a]"></span>
+                          {!msg.isRead && (
+                            <span className="inline-block mt-2 w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_#16a34a] animate-pulse"></span>
+                          )}
+                          {msg.isRead && (
+                            <span className="material-symbols-outlined text-xs text-zinc-600 mt-2">done_all</span>
+                          )}
                        </div>
                     </div>
                   ))
@@ -412,13 +475,13 @@ export default function AdminDashboard() {
           </div>
 
           {/* Activity Log */}
-          <div className="space-y-8">
-            <h3 className={`text-3xl font-black px-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Log Aktivitas</h3>
-            <div className={`rounded-[3rem] border overflow-hidden p-10 ${
-              theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-100 shadow-xl shadow-zinc-200/20'
+          <div className="space-y-6">
+            <h3 className={`text-2xl font-black px-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Log Aktivitas</h3>
+            <div className={`rounded-[2.5rem] border overflow-hidden p-8 ${
+              theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-100 shadow-lg shadow-zinc-200/20'
             }`}>
-              <div className="space-y-10 relative">
-                {auditLogs.slice(0, 10).map((activity, i) => (
+              <div className="space-y-6 relative">
+                {auditLogs.slice(0, 6).map((activity, i) => (
                   <div key={i} className="flex gap-6 relative group">
                     {/* Vertical Line Connector */}
                     {i !== auditLogs.length - 1 && (
@@ -430,7 +493,7 @@ export default function AdminDashboard() {
                           {activity.icon}
                        </span>
                     </div>
-                    <div className="pb-10">
+                    <div className="pb-6">
                       <div className="flex items-center gap-3">
                          <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-md ${
                            activity.type === 'message' ? 'bg-amber-500/10 text-amber-500' :
@@ -508,6 +571,7 @@ export default function AdminDashboard() {
                  )}
               </div>
            </div>
+        </div>
         </div>
       </div>
     </AdminLayout>

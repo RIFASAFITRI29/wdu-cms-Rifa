@@ -5,6 +5,7 @@ export interface ClientLogo {
   name: string;
   url: string;
   isActive?: boolean;
+  order?: number;
   createdAt: string;
 }
 
@@ -63,5 +64,14 @@ export const clientService = {
   async resetToDefault() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultClients));
     return { data: defaultClients };
+  },
+
+  async reorder(items: { id: string, order: number }[]) {
+    try {
+      await api.post('/clients/reorder', { items });
+      await this.getAll();
+    } catch (error) {
+      console.warn('Reorder API failed, using local fallback');
+    }
   }
 };

@@ -111,7 +111,7 @@ export default function LoginPage() {
       </div>
 
       {/* --- RIGHT SIDE: LOGIN FORM --- */}
-      <div className="w-full lg:w-1/3 flex flex-col relative z-10">
+      <div className="w-full lg:w-[30%] flex flex-col relative z-10">
         {/* Toggles */}
         <div className="p-6 flex justify-end gap-3">
 
@@ -129,7 +129,7 @@ export default function LoginPage() {
         </div>
 
         <div className="flex-1 flex items-center justify-center px-10 pb-10">
-          <div className="max-w-sm w-full space-y-8">
+          <div className="max-w-[320px] w-full space-y-6">
             <div>
               <div className="lg:hidden flex items-center gap-3 mb-8">
                  <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
@@ -152,7 +152,7 @@ export default function LoginPage() {
                     <input 
                       type="email"
                       required
-                      className={`w-full px-8 py-5 rounded-3xl outline-none border transition-all font-bold ${
+                      className={`w-full px-6 py-4 rounded-2xl outline-none border transition-all font-bold ${
                         theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:bg-white focus:border-green-500'
                       }`}
                       placeholder="admin@wahanadata.com"
@@ -169,7 +169,7 @@ export default function LoginPage() {
                     <input 
                       type="password"
                       required
-                      className={`w-full px-8 py-5 rounded-3xl outline-none border transition-all font-bold ${
+                      className={`w-full px-6 py-4 rounded-2xl outline-none border transition-all font-bold ${
                         theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:bg-white focus:border-green-500'
                       }`}
                       placeholder="••••••••"
@@ -190,7 +190,7 @@ export default function LoginPage() {
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-6 bg-primary text-zinc-950 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-green-400 transition-all shadow-[0_20px_40px_rgba(21,128,61,0.2)] active:scale-95 disabled:opacity-50 mt-4"
+                  className="w-full py-4 bg-primary text-zinc-950 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-green-400 transition-all shadow-[0_15px_30px_rgba(21,128,61,0.2)] active:scale-95 disabled:opacity-50 mt-2"
                 >
                   {isLoading ? 'MENGOTORISASI...' : 'MASUK KE DASHBOARD'}
                 </button>

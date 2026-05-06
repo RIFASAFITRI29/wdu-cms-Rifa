@@ -634,8 +634,8 @@ export default function PagesManagementPage() {
                                 </div>
                              </div>
                           </div>
-                       </div>
-                    ) : editingPage.slug === 'tentang-kami' ? (
+                     </div>
+                  ) : editingPage.slug === 'tentang-kami' ? (
                       <div className="space-y-10">
                          {/* Hero Config for About */}
                          <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-100 dark:border-zinc-800 shadow-sm space-y-6">
@@ -643,7 +643,7 @@ export default function PagesManagementPage() {
                                <div className="w-2 h-2 bg-primary rounded-full"></div>
                                <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">KONFIGURASI HERO TENTANG KAMI</h4>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                               <div className="space-y-2">
                                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">HERO WALLPAPER (URL)</label>
                                  <input 
@@ -664,6 +664,137 @@ export default function PagesManagementPage() {
                                    onChange={(e) => updateSection('hero', 'title', e.target.value)}
                                  />
                               </div>
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">GAMBAR GEDUNG (INTRO)</label>
+                                 <input 
+                                   className={`w-full px-6 py-4 rounded-xl outline-none border transition-all font-bold ${
+                                     theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-emerald-500 text-white' : 'bg-zinc-50 border-gray-200 focus:border-emerald-500 text-zinc-900 shadow-sm'
+                                   }`}
+                                   placeholder="https://..."
+                                   value={editingPage.sections?.intro?.image || ''}
+                                   onChange={(e) => updateSection('intro', 'image', e.target.value)}
+                                 />
+                              </div>
+                            </div>
+                         </div>
+
+                         {/* Data Business Section description */}
+                         <div className="bg-zinc-900/5 dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-100 dark:border-zinc-800 shadow-sm space-y-6">
+                            <div className="flex items-center gap-2 mb-2">
+                               <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                               <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">DESKRIPSI SEKSI "DATA IS OUR BUSINESS"</h4>
+                            </div>
+                            <textarea 
+                              rows={3}
+                              className={`w-full px-6 py-4 rounded-xl outline-none border transition-all font-medium resize-none ${
+                                theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-emerald-500 text-white' : 'bg-white border-gray-200 focus:border-emerald-500 text-zinc-900 shadow-sm'
+                              }`}
+                              value={editingPage.sections?.data_business_desc || ''}
+                              onChange={(e) => setEditingPage({...editingPage, sections: {...editingPage.sections, data_business_desc: e.target.value}})}
+                            />
+                         </div>
+
+                         {/* Vision & Mission Section */}
+                         <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-100 dark:border-zinc-800 shadow-sm space-y-6">
+                            <div className="flex items-center gap-2 mb-2">
+                               <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                               <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">VISI & MISI PERUSAHAAN</h4>
+                            </div>
+                            <div className="space-y-4">
+                               <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">VISI (TEKS UTAMA)</label>
+                                  <textarea 
+                                    rows={2}
+                                    className={`w-full px-6 py-4 rounded-xl outline-none border transition-all font-bold ${
+                                      theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-emerald-500 text-white' : 'bg-zinc-50 border-gray-200 focus:border-emerald-500 text-zinc-900'
+                                    }`}
+                                    value={editingPage.sections?.vision?.text || ''}
+                                    onChange={(e) => updateSection('vision', 'text', e.target.value)}
+                                  />
+                               </div>
+                               <div className="space-y-2">
+                                  <div className="flex justify-between items-center">
+                                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">MISI (POIN-POIN)</label>
+                                     <button 
+                                       type="button"
+                                       onClick={() => {
+                                         const current = editingPage.sections?.vision?.missions || [];
+                                         updateSection('vision', 'missions', [...current, '']);
+                                       }}
+                                       className="text-[10px] font-black text-primary uppercase"
+                                     >+ Tambah Poin</button>
+                                  </div>
+                                  <div className="space-y-3">
+                                     {(editingPage.sections?.vision?.missions || []).map((m: string, i: number) => (
+                                       <div key={i} className="flex gap-2">
+                                          <input 
+                                            className={`flex-1 px-4 py-2 rounded-lg outline-none border transition-all text-sm font-medium ${
+                                              theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-emerald-500 text-white' : 'bg-zinc-50 border-gray-200 focus:border-emerald-500 text-zinc-900'
+                                            }`}
+                                            value={m}
+                                            onChange={(e) => {
+                                              const current = [...(editingPage.sections?.vision?.missions || [])];
+                                              current[i] = e.target.value;
+                                              updateSection('vision', 'missions', current);
+                                            }}
+                                          />
+                                          <button 
+                                            type="button"
+                                            onClick={() => {
+                                              const current = [...(editingPage.sections?.vision?.missions || [])];
+                                              current.splice(i, 1);
+                                              updateSection('vision', 'missions', current);
+                                            }}
+                                            className="w-10 h-10 bg-red-50 text-red-500 rounded-lg flex items-center justify-center"
+                                          >
+                                             <span className="material-symbols-outlined text-sm">delete</span>
+                                          </button>
+                                       </div>
+                                     ))}
+                                  </div>
+                               </div>
+                            </div>
+                         </div>
+
+                         {/* Strategic Pillars */}
+                         <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-100 dark:border-zinc-800 shadow-sm space-y-6">
+                            <div className="flex items-center gap-2 mb-2">
+                               <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                               <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">PILAR STRATEGIS (3 BOX)</h4>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                               {[0, 1, 2].map(idx => {
+                                 const pillar = (editingPage.sections?.pillars || [])[idx] || { title: '', desc: '', icon: 'science' };
+                                 return (
+                                   <div key={idx} className="p-4 border border-zinc-100 dark:border-zinc-800 rounded-2xl space-y-4">
+                                      <div className="space-y-1">
+                                         <label className="text-[8px] font-black text-zinc-400 uppercase">JUDUL PILAR {idx + 1}</label>
+                                         <input 
+                                           className="w-full bg-transparent border-b border-zinc-100 dark:border-zinc-800 py-1 outline-none text-xs font-bold"
+                                           value={pillar.title}
+                                           onChange={(e) => {
+                                             const current = [...(editingPage.sections?.pillars || [])];
+                                             current[idx] = { ...pillar, title: e.target.value };
+                                             updateSection('pillars', null, current);
+                                           }}
+                                         />
+                                      </div>
+                                      <div className="space-y-1">
+                                         <label className="text-[8px] font-black text-zinc-400 uppercase">DESKRIPSI</label>
+                                         <textarea 
+                                           rows={3}
+                                           className="w-full bg-transparent border border-zinc-100 dark:border-zinc-800 p-2 rounded-lg outline-none text-[10px] font-medium resize-none"
+                                           value={pillar.desc}
+                                           onChange={(e) => {
+                                             const current = [...(editingPage.sections?.pillars || [])];
+                                             current[idx] = { ...pillar, desc: e.target.value };
+                                             updateSection('pillars', null, current);
+                                           }}
+                                         />
+                                      </div>
+                                   </div>
+                                 );
+                               })}
                             </div>
                          </div>
 
@@ -703,7 +834,7 @@ export default function PagesManagementPage() {
 
                                     <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl overflow-hidden shrink-0 relative group/img">
                                        {dir.image ? (
-                                         <img src={dir.image} className="w-full h-full object-cover" />
+                                         <img src={dir.image} className="w-full h-full object-cover" alt="Director" />
                                        ) : (
                                          <div className="w-full h-full flex items-center justify-center text-zinc-400">
                                            <span className="material-symbols-outlined">person</span>

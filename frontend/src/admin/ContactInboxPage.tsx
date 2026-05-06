@@ -35,6 +35,8 @@ export default function ContactInboxPage() {
       try {
         await contactService.markAsRead(msg.id);
         setMessages(messages.map(m => m.id === msg.id ? { ...m, isRead: true } : m));
+        // Notify AdminLayout to update badge
+        window.dispatchEvent(new Event('refreshUnread'));
       } catch (error) {
         console.error('Failed to mark as read:', error);
       }
@@ -47,6 +49,8 @@ export default function ContactInboxPage() {
         await contactService.delete(id);
         fetchMessages();
         if (selectedMessage?.id === id) setSelectedMessage(null);
+        // Notify AdminLayout to update badge
+        window.dispatchEvent(new Event('refreshUnread'));
       } catch (error) {
         console.error('Failed to delete message:', error);
         fetchMessages();

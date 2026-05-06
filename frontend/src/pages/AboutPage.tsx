@@ -98,7 +98,7 @@ export default function AboutPage() {
            <span className="text-sm font-black uppercase tracking-[0.5em] text-white/80 mb-4 block">
            </span>
            <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase reveal-text">
-              {data?.title || t('about.hero_title')}
+              {data?.sections?.hero?.title || data?.title || t('about.hero_title')}
            </h1>
         </div>
       </section>
@@ -109,7 +109,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
             <div className="relative">
               <div className="relative z-10 bg-[#f0f4f2] rounded-[40px] overflow-hidden shadow-2xl group border border-emerald-50 aspect-square">
-                <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Consultants Team" src="https://sis.wahanadata.co.id/img/wdu-building.jpg" />
+                <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Consultants Team" src={data?.sections?.intro?.image || "https://sis.wahanadata.co.id/img/wdu-building.jpg"} />
               </div>
               <div className="absolute top-12 -right-12 w-64 h-64 bg-[#164220]/5 -z-10 rounded-[40px]"></div>
             </div>
@@ -136,10 +136,13 @@ export default function AboutPage() {
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent"></div>
         <div className="relative max-w-7xl mx-auto px-8 text-center md:text-left">
-          <h2 className="text-white text-7xl md:text-9xl font-black tracking-tighter mb-4 uppercase">{t('common.data_business').split(' ').slice(0,3).join(' ')}<br />{t('common.data_business').split(' ').slice(3).join(' ')}</h2>
+          <h2 className="text-white text-7xl md:text-9xl font-black tracking-tighter mb-4 uppercase">
+            {(t('common.data_business') || '').split(' ').slice(0,3).join(' ')}<br />
+            {(t('common.data_business') || '').split(' ').slice(3).join(' ')}
+          </h2>
           <div className="h-1 w-32 bg-[#bdefbe] mb-8"></div>
           <p className="text-[#e1e3e1] text-xl max-w-2xl font-light tracking-wide leading-relaxed">
-            {t('about.data_business_desc')}
+            {typeof data?.sections?.data_business_desc === 'string' ? data.sections.data_business_desc : t('about.data_business_desc')}
           </p>
         </div>
       </section>
@@ -183,7 +186,7 @@ export default function AboutPage() {
                   <h3 className="text-xl font-black uppercase tracking-widest text-emerald-900">{t('about.vision_label')}</h3>
                 </div>
                 <p className="text-xl text-emerald-950/80 italic font-medium leading-relaxed">
-                  "{t('about.vision_text')}"
+                  "{data?.sections?.vision?.text || t('about.vision_text')}"
                 </p>
               </div>
 
@@ -194,11 +197,11 @@ export default function AboutPage() {
                   <h3 className="text-xl font-black uppercase tracking-widest text-emerald-900">{t('about.mission_label')}</h3>
                 </div>
                 <ul className="space-y-4">
-                  {[
+                  {(Array.isArray(data?.sections?.vision?.missions) ? data.sections.vision.missions : [
                     t('about.mission_1'),
                     t('about.mission_2'),
                     t('about.mission_3')
-                  ].map((item, idx) => (
+                  ]).map((item: string, idx: number) => (
                     <li key={idx} className="flex gap-3 text-emerald-950/70 text-sm leading-relaxed font-medium">
                       <span className="material-symbols-outlined text-emerald-900 text-lg shrink-0">check_circle</span>
                       {item}
@@ -210,7 +213,7 @@ export default function AboutPage() {
 
             {/* Right Column: Strategic Pillars (With Brackets) */}
             <div className="lg:col-span-7 space-y-12 py-4">
-              {[
+              {(Array.isArray(data?.sections?.pillars) ? data.sections.pillars : [
                 {
                   title: t('about.pillar_1_title'),
                   desc: t('about.pillar_1_desc'),
@@ -226,7 +229,7 @@ export default function AboutPage() {
                   desc: t('about.pillar_3_desc'),
                   icon: "lightbulb"
                 }
-              ].map((pillar, idx) => (
+              ]).map((pillar: any, idx: number) => (
                 <div key={idx} className="relative p-8 group">
                   {/* Decorative Brackets */}
                   <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-emerald-900/20 group-hover:border-emerald-900 transition-colors duration-500"></div>
@@ -234,11 +237,11 @@ export default function AboutPage() {
                   
                   <div className="flex items-center gap-8 relative z-10">
                     <div className="w-16 h-16 bg-emerald-50 rounded-sm flex items-center justify-center shrink-0 shadow-sm group-hover:bg-emerald-900 group-hover:text-white transition-all duration-500">
-                      <span className="material-symbols-outlined text-3xl">{pillar.icon}</span>
+                      <span className="material-symbols-outlined text-3xl">{pillar?.icon || 'science'}</span>
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-emerald-950 mb-2">{pillar.title}</h4>
-                      <p className="text-emerald-900/60 text-sm leading-relaxed max-w-lg font-medium">{pillar.desc}</p>
+                      <h4 className="text-xl font-bold text-emerald-950 mb-2">{pillar?.title}</h4>
+                      <p className="text-emerald-900/60 text-sm leading-relaxed max-w-lg font-medium">{pillar?.desc}</p>
                     </div>
                   </div>
                 </div>

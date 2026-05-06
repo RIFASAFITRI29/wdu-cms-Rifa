@@ -100,5 +100,14 @@ export const experiencePartnerService = {
   async resetToDefault() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultPartners));
     return { data: defaultPartners };
+  },
+
+  async reorder(items: { id: string, order: number }[]) {
+    try {
+      await api.post('/experience-partners/reorder', { items });
+      await this.getAll();
+    } catch (error) {
+      console.warn('Reorder API failed for experience partners, using local storage fallback');
+    }
   }
 };

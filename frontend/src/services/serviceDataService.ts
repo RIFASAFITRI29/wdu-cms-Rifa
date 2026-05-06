@@ -82,5 +82,14 @@ export const serviceDataService = {
     } catch (error) {
       return { success: true };
     }
+  },
+
+  async reorder(items: { id: string, order: number }[]) {
+    try {
+      await api.post('/services/reorder', { items });
+      await this.getAll();
+    } catch (error) {
+      console.warn('Reorder API failed for services, using local storage fallback');
+    }
   }
 };

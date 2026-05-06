@@ -28,6 +28,7 @@ export default function ExperienceManagementPage() {
   const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = React.useState(false);
+  const [draggedId, setDraggedId] = React.useState<string | null>(null);
 
 
   const fetchPartners = async () => {
@@ -117,6 +118,53 @@ export default function ExperienceManagementPage() {
       setIsSaving(false);
     }
   };
+ 
+   const handleDragStart = (id: string) => {
+     setDraggedId(id);
+   };
+ 
+   const handleDragOver = (e: React.DragEvent) => {
+     e.preventDefault();
+   };
+ 
+   const handleDrop = async (targetId: string, year: string) => {
+     if (!draggedId || draggedId === targetId) return;
+ 
+     const yearPartners = [...groupedPartners[year]];
+     const draggedIndex = yearPartners.findIndex(p => p.id === draggedId);
+     const targetIndex = yearPartners.findIndex(p => p.id === targetId);
+ 
+     if (draggedIndex === -1 || targetIndex === -1) return;
+ 
+     const newYearPartners = [...yearPartners];
+     const [draggedItem] = newYearPartners.splice(draggedIndex, 1);
+     newYearPartners.splice(targetIndex, 0, draggedItem);
+ 
+     // Update globally
+     const newAllPartners = partners.map(p => {
+       if (p.year === year) {
+         const found = newYearPartners.find(np => np.id === p.id);
+         return found || p;
+       }
+       return p;
+     });
+ 
+     setPartners(newAllPartners);
+     setDraggedId(null);
+ 
+     // Reorder logic (simplified: all items in that year get new order)
+     const reorderItems = newYearPartners.map((p, i) => ({
+       id: p.id,
+       order: i + 1
+     }));
+ 
+     try {
+       await experiencePartnerService.reorder(reorderItems);
+     } catch (error) {
+       console.error('Failed to reorder');
+       fetchPartners();
+     }
+   };
 
 
   // Filter partners based on search and year
@@ -217,10 +265,17 @@ export default function ExperienceManagementPage() {
                      {groupedPartners[year].map(partner => (
                        <div 
                          key={partner.id} 
-                         className={`group aspect-square rounded-[2rem] border transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 relative overflow-hidden flex flex-col items-center justify-center p-6 ${
+                         draggable
+                         onDragStart={() => handleDragStart(partner.id)}
+                         onDragOver={handleDragOver}
+                         onDrop={() => handleDrop(partner.id, year)}
+                         className={`group aspect-square rounded-[2rem] border transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 relative overflow-hidden flex flex-col items-center justify-center p-6 cursor-grab active:cursor-grabbing ${
                            theme === 'dark' ? 'bg-zinc-950 border-zinc-800 hover:border-primary/30' : 'bg-gray-50 border-zinc-100 shadow-inner'
-                         }`}
+                         } ${draggedId === partner.id ? 'opacity-20 scale-95' : ''}`}
                        >
+                          <div className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                             <span className="material-symbols-outlined text-xs text-zinc-500">drag_indicator</span>
+                          </div>
                           {partner.logoUrl?.includes('application/pdf') || partner.logoUrl?.includes('data:application/pdf') ? (
                             <div className="flex flex-col items-center justify-center text-primary">
                                <span className="material-symbols-outlined text-5xl">picture_as_pdf</span>
