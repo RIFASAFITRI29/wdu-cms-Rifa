@@ -3,18 +3,22 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
+import prisma from './prisma';
 import authRoutes from './routes/auth';
 import pageRoutes from './routes/pages';
 import serviceRoutes from './routes/services';
 import projectRoutes from './routes/projects';
 import contactRoutes from './routes/contact';
 import configRoutes from './routes/config';
+import mediaRoutes from './routes/media';
+import clientRoutes from './routes/clients';
+import galleryRoutes from './routes/gallery';
+import experiencePartnerRoutes from './routes/experiencePartners';
+import userRoutes from './routes/users';
 
 dotenv.config();
 
 const app = express();
-const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3001;
 
 app.use(helmet());
@@ -23,7 +27,9 @@ app.use(cors({
   credentials: true,
 }));
 app.use(morgan('dev'));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/pages', pageRoutes);
@@ -31,6 +37,11 @@ app.use('/api/v1/services', serviceRoutes);
 app.use('/api/v1/projects', projectRoutes);
 app.use('/api/v1/contact', contactRoutes);
 app.use('/api/v1/config', configRoutes);
+app.use('/api/v1/media', mediaRoutes);
+app.use('/api/v1/clients', clientRoutes);
+app.use('/api/v1/gallery', galleryRoutes);
+app.use('/api/v1/experience-partners', experiencePartnerRoutes);
+app.use('/api/v1/users', userRoutes);
 
 app.get('/api/v1/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

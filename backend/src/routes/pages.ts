@@ -1,11 +1,10 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../prisma';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 router.get('/', async (req, res) => {
-  const pages = await prisma.page.findMany({ orderBy: { slug: 'asc' } });
+  const pages = await prisma.page.findMany({ orderBy: { updatedAt: 'desc' } });
   res.json(pages);
 });
 
@@ -16,12 +15,43 @@ router.get('/:slug', async (req, res) => {
 });
 
 router.put('/:slug', async (req, res) => {
-  const { title, metaTitle, metaDesc, sections, isPublished } = req.body;
+  const { title, content, metaTitle, metaDesc, sections, isPublished, phone, email, address, mapsUrl } = req.body;
   const page = await prisma.page.update({
     where: { slug: req.params.slug },
-    data: { title, metaTitle, metaDesc, sections, isPublished },
+    data: { title, content, metaTitle, metaDesc, sections, isPublished, phone, email, address, mapsUrl },
   });
   res.json(page);
+});
+
+router.post('/', async (req, res) => {
+  const { title, slug, content, sections, isPublished, phone, email, address, mapsUrl } = req.body;
+  try {
+    const page = await prisma.page.create({
+      data: { 
+        title, 
+        slug, 
+        content: content || '',
+        sections: sections || {}, 
+        isPublished: isPublished || false,
+        phone,
+        email,
+        address,
+        mapsUrl
+      },
+    });
+    res.status(201).json(page);
+  } catch (error) {
+    res.status(400).json({ error: 'Failed to create page. Slug might already exist.' });
+  }
+});
+
+router.delete('/:slug', async (req, res) => {
+  try {
+    await prisma.page.delete({ where: { slug: req.params.slug } });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(404).json({ error: 'Page not found' });
+  }
 });
 
 router.patch('/:slug/publish', async (req, res) => {

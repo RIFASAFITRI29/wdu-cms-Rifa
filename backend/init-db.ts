@@ -8,7 +8,7 @@ async function initDatabase() {
     host: 'localhost',
     port: 5432,
     user: 'postgres',
-    password: 'Nasigoreng123@',
+    password: 'rifasafitri567',
     database: DEFAULT_DB,
   });
 

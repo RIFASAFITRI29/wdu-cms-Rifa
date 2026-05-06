@@ -4,14 +4,14 @@
   "private": true,
   "main": "dist/server.js",
   "scripts": {
-    "dev": "npm run db:setup && nodemon src/server.ts",
+    "dev": "nodemon src/server.ts",
     "db:setup": "ts-node init-db.ts && npx prisma db push",
     "db:seed": "ts-node prisma/seed.ts",
     "build": "tsc",
     "start": "node dist/server.js"
   },
   "dependencies": {
-    "@prisma/client": "^5.9.1",
+    "@prisma/client": "^5.22.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",
