@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         String   @default("editor")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Page {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  content     String
+  metaTitle   String?
+  metaDesc    String?
+  sections    Json     @default("{}")
+  isPublished Boolean  @default(false)
+  phone       String?
+  email       String?
+  address     String?
+  mapsUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ExperiencePartner {
+  id        String   @id @default(uuid())
+  year      Int
+  category  String?  @default("Partner")
+  logoUrl   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  icon        String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PartnerLogo {
+  id        String   @id @default(uuid())
+  name      String
+  url       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String    @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
+  repliedAt DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  client      String?
+  category    String?
+  year        Int?
+  imageUrl    String?
+  link        String?
+  isHighlight Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Media {
+  id         String   @id @default(uuid())
+  filename   String
+  url        String
+  mimeType   String
+  size       Int
+  uploadedBy String?  @default("Admin")
+  createdAt  DateTime @default(now())
+}
+
+model SiteConfig {
+  id    String @id @default(uuid())
+  key   String @unique
+  value String
+}
+
+model DocumentationGallery {
+  id        String   @id @default(uuid())
+  title     String
+  url       String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Gallery {
+  id          String   @id @default(uuid())
+  title       String
+  imageUrl    String
+  description String?
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
