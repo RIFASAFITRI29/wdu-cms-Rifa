@@ -1,7 +1,18 @@
 import { Router } from 'express';
 import prisma from '../prisma';
+import { z } from 'zod';
 
 const router = Router();
+
+const projectSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  client: z.string().optional(),
+  category: z.string().optional(),
+  year: z.string().optional(),
+  description: z.string().optional(),
+  imageUrl: z.string().optional(),
+  isHighlight: z.boolean().optional(),
+});
 
 router.get('/', async (req, res) => {
   const projects = await prisma.project.findMany({
@@ -18,11 +29,21 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { title, client, category, year, description, imageUrl, isHighlight } = req.body;
+  const validation = projectSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({ error: validation.error.errors[0].message });
+  }
+  const { title, client, category, year, description, imageUrl, isHighlight } = validation.data;
   const maxOrder = await prisma.project.aggregate({ _max: { order: true } });
   const project = await prisma.project.create({
     data: {
-      title, client, category, year, description, imageUrl, isHighlight,
+      title, 
+      client, 
+      category, 
+      year: year ? parseInt(year) : undefined, 
+      description, 
+      imageUrl, 
+      isHighlight,
       order: (maxOrder._max.order || 0) + 1,
     },
   });
@@ -30,10 +51,22 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-  const { title, client, category, year, description, imageUrl, isHighlight } = req.body;
+  const validation = projectSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({ error: validation.error.errors[0].message });
+  }
+  const { title, client, category, year, description, imageUrl, isHighlight } = validation.data;
   const project = await prisma.project.update({
     where: { id: req.params.id },
-    data: { title, client, category, year, description, imageUrl, isHighlight },
+    data: { 
+      title, 
+      client, 
+      category, 
+      year: year ? parseInt(year) : undefined, 
+      description, 
+      imageUrl, 
+      isHighlight 
+    },
   });
   res.json(project);
 });

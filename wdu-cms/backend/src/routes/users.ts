@@ -1,8 +1,44 @@
 import { Router } from 'express';
 import prisma from '../prisma';
 import bcrypt from 'bcrypt';
+import { authenticate, authorize } from '../middleware/authMiddleware';
 
 const router = Router();
+
+// Apply authentication to all routes
+router.use(authenticate);
+
+// UPDATE profile (Accessible by any logged-in user for their own account)
+router.patch('/profile', async (req: any, res) => {
+  try {
+    const userId = req.user.userId;
+    const { name, email, avatar, password } = req.body;
+    
+    const data: any = {};
+    if (name) data.name = name;
+    if (email) data.email = email;
+    if (avatar) data.avatar = avatar;
+    if (password) data.passwordHash = await bcrypt.hash(password, 12);
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        avatar: true
+      }
+    });
+    res.json(user);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to update profile', details: error.message });
+  }
+});
+
+// Other routes are restricted to SUPER_ADMIN
+router.use(authorize(['SUPER_ADMIN']));
 
 // GET all users
 router.get('/', async (req, res) => {
@@ -27,7 +63,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, email, role, password } = req.body;
-    const passwordHash = await bcrypt.hash(password || 'WDU12345!', 10);
+    const passwordHash = await bcrypt.hash(password || 'WDU12345!', 12);
     
     const user = await prisma.user.create({
       data: {
@@ -58,7 +94,7 @@ router.put('/:id', async (req, res) => {
     
     const data: any = { name, email, role };
     if (password) {
-      data.passwordHash = await bcrypt.hash(password, 10);
+      data.passwordHash = await bcrypt.hash(password, 12);
     }
 
     const user = await prisma.user.update({

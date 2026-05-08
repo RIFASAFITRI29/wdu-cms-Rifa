@@ -59,5 +59,9 @@ export const userService = {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return { success: true };
     }
+  },
+
+  updateProfile: async (data: any) => {
+    return await api.patch<AdminUser>('/users/profile', data);
   }
 };

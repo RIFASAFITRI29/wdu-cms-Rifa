@@ -40,20 +40,39 @@ export const mediaService = {
     return { data: getLocalMedia() };
   },
 
-  upload: async (data: Partial<MediaFile>) => {
+  upload: async (file: File, filename?: string) => {
     try {
-      // Backend handles creation at POST /api/v1/media
-      return await api.post<MediaFile>('/media', data);
+      const formData = new FormData();
+      formData.append('file', file);
+      if (filename) {
+        formData.append('filename', filename);
+      }
+      
+      return await api.post<MediaFile>('/media', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
     } catch (e) {
       console.error('API Upload failed, falling back to local storage', e);
-      const files = getLocalMedia();
-      const newFile = { 
-        ...data, 
-        id: Math.random().toString(36).substr(2, 9), 
-        createdAt: new Date().toISOString() 
-      } as MediaFile;
-      saveLocalMedia([newFile, ...files]);
-      return { data: newFile };
+      // Fallback logic for offline mode (using base64 for local storage)
+      return new Promise<any>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const files = getLocalMedia();
+          const newFile = { 
+            id: Math.random().toString(36).substr(2, 9),
+            filename: filename || file.name,
+            url: reader.result as string,
+            mimeType: file.type,
+            size: file.size,
+            createdAt: new Date().toISOString() 
+          } as MediaFile;
+          saveLocalMedia([newFile, ...files]);
+          resolve({ data: newFile });
+        };
+        reader.readAsDataURL(file);
+      });
     }
   },
 

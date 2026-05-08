@@ -13,6 +13,14 @@ export default function AdminDashboard() {
   const { user } = useUser();
   const navigate = useNavigate();
   
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 11) return 'Selamat Pagi';
+    if (hour < 15) return 'Selamat Siang';
+    if (hour < 18) return 'Selamat Sore';
+    return 'Selamat Malam';
+  };
+  
   const [stats, setStats] = React.useState([
     { label: 'Total Project', value: '0', icon: 'inventory_2', color: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400', trend: '...', path: '/admin/experience' },
     { label: 'Layanan Aktif', value: '0', icon: 'settings_suggest', color: 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400', trend: '...', path: '/admin/services' },
@@ -206,6 +214,25 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
+      <style>{`
+        .signature-gradient { background: linear-gradient(135deg, #164220 0%, #2e5a35 100%); }
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-15px); }
+          100% { transform: translateY(0px); }
+        }
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .float-animation { animation: float 6s ease-in-out infinite; }
+        .animate-spin-slow { animation: spin-slow 12s linear infinite; }
+        .glass-card {
+          background: rgba(255, 255, 255, 0.7);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+      `}</style>
       <div className="relative min-h-screen">
         {/* Background Decorative Blobs */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10 animate-pulse"></div>
@@ -213,36 +240,71 @@ export default function AdminDashboard() {
         
         <div className="space-y-12 pb-20 max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-          <div className="reveal-up">
-            <h1 className={`text-5xl md:text-6xl font-black tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-gray-950'}`}>
-              Halo, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">{user.name.split(' ')[0]}</span>! 👋
-            </h1>
-            <p className={`text-[10px] font-black mt-4 uppercase tracking-[0.6em] ${theme === 'dark' ? 'text-primary/60' : 'text-emerald-700/60'}`}>Intelligence Data Hub v2.0</p>
-          </div>
-          
-          <div className="flex flex-wrap gap-4">
-             <button 
-               onClick={() => navigate('/admin/pages')}
-               className="bg-zinc-800 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-primary hover:text-zinc-950 transition-all shadow-xl flex items-center gap-3 active:scale-95"
-             >
-                <span className="material-symbols-outlined text-xl">edit_document</span>
-                Edit Beranda
-             </button>
-             <button 
-               onClick={() => navigate('/admin/media')}
-               className="bg-zinc-800 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-primary hover:text-zinc-950 transition-all shadow-xl flex items-center gap-3 active:scale-95"
-             >
-                <span className="material-symbols-outlined text-xl">cloud_upload</span>
-                Upload Company Profile
-             </button>
-             <button 
-               onClick={() => navigate('/admin/contact')}
-               className="bg-primary text-zinc-950 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-green-400 transition-all shadow-[0_20px_40px_rgba(21,128,61,0.15)] flex items-center gap-3 active:scale-95"
-             >
-                <span className="material-symbols-outlined text-xl">mail</span>
-                Lihat Pesan
-             </button>
+        <header className="relative py-16 px-10 rounded-[3rem] overflow-hidden group mb-12">
+           {/* Animated Background Layers */}
+           <div className="absolute inset-0 bg-emerald-950 transition-colors duration-700"></div>
+           <div className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-primary/20 via-transparent to-transparent z-0 opacity-50"></div>
+           <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/30 rounded-full blur-[120px] animate-pulse"></div>
+           <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-emerald-500/20 rounded-full blur-[100px]"></div>
+           
+           <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-12">
+              <div className="max-w-2xl text-center lg:text-left">
+                 <div className="flex items-center justify-center lg:justify-start gap-3 mb-6">
+                    <div className="px-5 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 flex items-center gap-3">
+                       <div className="w-2 h-2 rounded-full bg-primary animate-ping"></div>
+                       <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-100">
+                          {getGreeting()} • Live Analytics
+                       </span>
+                    </div>
+                 </div>
+                 
+                 <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.8] text-white mb-8">
+                    SIAP BEKERJA,<br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-300 to-primary/50">{user.name.split(' ')[0]}?</span>
+                 </h1>
+                 
+                 <p className="text-xl md:text-2xl font-medium text-emerald-100/60 leading-relaxed mb-10 max-w-xl">
+                    "Bagaimana kami dapat membantu bisnis Anda hari ini?"
+                    <br />
+                    <span className="text-sm font-normal opacity-50">Semua sistem dalam kondisi optimal dan siap untuk sinkronisasi data terbaru.</span>
+                 </p>
+                 
+                 <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+                    <button 
+                      onClick={() => navigate('/admin/pages')}
+                      className="px-8 py-4 bg-primary text-zinc-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_20px_40px_rgba(22,197,94,0.3)]"
+                    >
+                       Mulai Mengelola
+                    </button>
+                    <button 
+                      onClick={() => navigate('/admin/profile')}
+                      className="px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all"
+                    >
+                       Buka Profil
+                    </button>
+                 </div>
+              </div>
+              
+              {/* Visual Element: 3D-like Stats Orb */}
+              <div className="hidden xl:flex relative w-80 h-80 items-center justify-center">
+                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-[60px] animate-pulse"></div>
+                 <div className="w-64 h-64 rounded-full border-4 border-dashed border-primary/30 animate-spin-slow p-8">
+                    <div className="w-full h-full rounded-full border border-white/20 flex items-center justify-center backdrop-blur-3xl bg-white/5 relative overflow-hidden group">
+                       <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent"></div>
+                       <span className="material-symbols-outlined text-7xl text-primary float-animation">analytics</span>
+                    </div>
+                 </div>
+                 
+                 {/* Floating Mini Cards */}
+                 <div className="absolute -top-4 -right-4 p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 shadow-2xl float-animation" style={{ animationDelay: '1s' }}>
+                    <p className="text-[8px] font-black text-primary uppercase mb-1">Response</p>
+                    <p className="text-xl font-black text-white">99%</p>
+                 </div>
+                 <div className="absolute -bottom-8 -left-4 p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 shadow-2xl float-animation" style={{ animationDelay: '2s' }}>
+                    <p className="text-[8px] font-black text-emerald-400 uppercase mb-1">Security</p>
+                    <p className="text-xl font-black text-white">Active</p>
+                 </div>
+              </div>
            </div>
         </header>
 
@@ -280,10 +342,10 @@ export default function AdminDashboard() {
             <div 
               key={i} 
               onClick={() => navigate(stat.path)}
-              className={`relative overflow-hidden p-8 rounded-[2.5rem] border transition-all duration-500 hover:-translate-y-2 group cursor-pointer ${
+              className={`glass-card relative overflow-hidden p-8 rounded-[2.5rem] border transition-all duration-500 hover:-translate-y-2 group cursor-pointer ${
                 theme === 'dark' 
-                  ? 'bg-zinc-900/50 backdrop-blur-xl border-zinc-800 hover:border-primary/50 shadow-2xl shadow-black/20' 
-                  : 'bg-white border-gray-100 shadow-xl shadow-zinc-200/30 hover:border-green-200'
+                  ? 'bg-zinc-900/40 backdrop-blur-2xl border-zinc-800/50 hover:border-primary/50 shadow-[0_20px_50px_rgba(0,0,0,0.3)]' 
+                  : 'bg-white/80 backdrop-blur-md border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:border-green-200'
               }`}
             >
               {/* Background Decorative Element */}

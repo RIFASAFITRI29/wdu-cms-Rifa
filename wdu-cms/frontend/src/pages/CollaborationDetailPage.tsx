@@ -1,11 +1,16 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import SEO from '../components/SEO';
 
 export default function CollaborationDetailPage() {
   const { t } = useLanguage();
 
   return (
     <div className="bg-white">
+      <SEO 
+        title="Detail Proyek Kerjasama" 
+        slug="project"
+      />
       {/* ── HERO SECTION (CLEAN WHITE/GREEN) ── */}
       <section className="relative h-[400px] flex items-center overflow-hidden bg-emerald-950">
         <div className="absolute inset-0 z-0">

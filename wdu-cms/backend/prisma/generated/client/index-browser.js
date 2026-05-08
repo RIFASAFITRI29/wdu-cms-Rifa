@@ -127,26 +127,27 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   passwordHash: 'passwordHash',
   name: 'name',
-  role: 'role',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  role: 'role',
+  avatar: 'avatar'
 };
 
 exports.Prisma.PageScalarFieldEnum = {
   id: 'id',
-  title: 'title',
   slug: 'slug',
-  content: 'content',
+  title: 'title',
   metaTitle: 'metaTitle',
   metaDesc: 'metaDesc',
-  sections: 'sections',
   isPublished: 'isPublished',
-  phone: 'phone',
-  email: 'email',
-  address: 'address',
-  mapsUrl: 'mapsUrl',
+  sections: 'sections',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  content: 'content',
+  address: 'address',
+  email: 'email',
+  mapsUrl: 'mapsUrl',
+  phone: 'phone'
 };
 
 exports.Prisma.ExperiencePartnerScalarFieldEnum = {
@@ -164,8 +165,8 @@ exports.Prisma.ServiceScalarFieldEnum = {
   title: 'title',
   description: 'description',
   icon: 'icon',
-  isActive: 'isActive',
   order: 'order',
+  isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -174,6 +175,7 @@ exports.Prisma.PartnerLogoScalarFieldEnum = {
   id: 'id',
   name: 'name',
   url: 'url',
+  isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -186,24 +188,24 @@ exports.Prisma.ContactMessageScalarFieldEnum = {
   subject: 'subject',
   message: 'message',
   isRead: 'isRead',
+  createdAt: 'createdAt',
   readAt: 'readAt',
-  repliedAt: 'repliedAt',
-  createdAt: 'createdAt'
+  repliedAt: 'repliedAt'
 };
 
 exports.Prisma.ProjectScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  description: 'description',
   client: 'client',
   category: 'category',
   year: 'year',
+  description: 'description',
   imageUrl: 'imageUrl',
-  link: 'link',
   isHighlight: 'isHighlight',
   order: 'order',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  link: 'link'
 };
 
 exports.Prisma.MediaScalarFieldEnum = {
@@ -217,15 +219,16 @@ exports.Prisma.MediaScalarFieldEnum = {
 };
 
 exports.Prisma.SiteConfigScalarFieldEnum = {
-  id: 'id',
   key: 'key',
-  value: 'value'
+  value: 'value',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.DocumentationGalleryScalarFieldEnum = {
   id: 'id',
   title: 'title',
   url: 'url',
+  isActive: 'isActive',
   order: 'order',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

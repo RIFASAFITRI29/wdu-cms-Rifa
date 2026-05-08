@@ -13,36 +13,37 @@ model User {
   email        String   @unique
   passwordHash String
   name         String?
-  role         String   @default("editor")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  role         String   @default("editor")
+  avatar       String?
 }
 
 model Page {
   id          String   @id @default(uuid())
-  title       String
   slug        String   @unique
-  content     String
+  title       String
   metaTitle   String?
   metaDesc    String?
-  sections    Json     @default("{}")
   isPublished Boolean  @default(false)
-  phone       String?
-  email       String?
-  address     String?
-  mapsUrl     String?
+  sections    Json     @default("{}")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  content     String
+  address     String?
+  email       String?
+  mapsUrl     String?
+  phone       String?
 }
 
 model ExperiencePartner {
   id        String   @id @default(uuid())
-  year      Int
+  year      String
   category  String?  @default("Partner")
   logoUrl   String?
   order     Int      @default(0)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Service {
@@ -50,8 +51,8 @@ model Service {
   title       String
   description String
   icon        String?
-  isActive    Boolean  @default(true)
   order       Int      @default(0)
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -60,8 +61,9 @@ model PartnerLogo {
   id        String   @id @default(uuid())
   name      String
   url       String?
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model ContactMessage {
@@ -72,24 +74,24 @@ model ContactMessage {
   subject   String?
   message   String
   isRead    Boolean   @default(false)
+  createdAt DateTime  @default(now())
   readAt    DateTime?
   repliedAt DateTime?
-  createdAt DateTime  @default(now())
 }
 
 model Project {
   id          String   @id @default(uuid())
   title       String
-  description String
   client      String?
   category    String?
   year        Int?
+  description String?
   imageUrl    String?
-  link        String?
   isHighlight Boolean  @default(false)
   order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  link        String?
 }
 
 model Media {
@@ -103,18 +105,19 @@ model Media {
 }
 
 model SiteConfig {
-  id    String @id @default(uuid())
-  key   String @unique
-  value String
+  key       String   @id
+  value     String
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model DocumentationGallery {
   id        String   @id @default(uuid())
   title     String
   url       String
+  isActive  Boolean  @default(true)
   order     Int      @default(0)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Gallery {

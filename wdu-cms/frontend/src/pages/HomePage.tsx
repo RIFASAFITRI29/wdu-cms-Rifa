@@ -6,6 +6,7 @@ import { pageService } from '../services/pageService';
 import { useLanguage } from '../context/LanguageContext';
 import SEO from '../components/SEO';
 import NotFoundPage from './NotFoundPage';
+import { sanitizeHtml } from '../utils/sanitizer';
 
 
 interface Section {
@@ -36,7 +37,7 @@ const defaultData: PageData = {
       title: 'Data Terpadu, Solusi Cerdas | Hasil Maksimal',
       subtitle: '',
       content: 'Percayakan kebutuhan riset, analisis data, dan teknologi kepada Wahana Data Utama. Kami mengubah data menjadi wawasan berharga dan solusi praktis yang membantu Anda meraih keunggulan kompetitif di era digital.',
-      wallpaper: 'https://images.openai.com/static-rsc-4/uENIBpNQ9pzuQ7nkbkxvaKaPORZ90tTRfwcR7jdJd0eSpeQLsByLsOEX-jad7rhklyFBWcAjMQ1O2xp7EXNh_3bsngEs83vADK5Z8zAwabamyTl9WYWMtI3PgdASnE6Qc2gA5CmoJmCV5VFtxu60eL4q--jk8Awnk0SlFtB-7lYOHNQv1_76JuueOrerbDED?purpose=fullsize'
+      wallpaper: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=2426'
     },
     intro: {
       title: 'Memiliki pengalaman yang luas serta didukung oleh tim profesional yang kompeten.',
@@ -121,7 +122,7 @@ export default function HomePage() {
   });
   const [isLoadingServices, setIsLoadingServices] = useState(false);
   const [isNotFound, setIsNotFound] = useState(false);
-  const [showHeroText, setShowHeroText] = useState(false);
+
   const [isAutoScrollPaused, setIsAutoScrollPaused] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const galleryScrollRef = useRef<HTMLDivElement>(null);
@@ -174,7 +175,8 @@ export default function HomePage() {
         const galleryRes = results[3].status === 'fulfilled' ? results[3].value : null;
 
         if (pageRes?.data) {
-          if (pageRes.data.isPublished === false) {
+          const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
+          if (pageRes.data.isPublished === false && !isPreview) {
             setIsNotFound(true);
           }
           setData(pageRes.data);
@@ -264,72 +266,73 @@ export default function HomePage() {
         slug="home"
       />
       
+      <style>{`
+        @keyframes ken-burns {
+          0% { transform: scale(1); }
+          100% { transform: scale(1.15); }
+        }
+        .animate-ken-burns { animation: ken-burns 40s ease-out infinite alternate; }
+        .reveal-up { animation: revealUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes revealUp {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
       {isNotFound ? (
         <NotFoundPage />
       ) : (
         <>
-          {/* ── HERO SECTION (CLEAN WHITE/GREEN) ── */}
-      <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
-        {/* Background Image with Parallax Effect */}
-        <div className="absolute inset-0 z-0 scale-110">
+{/* ── HERO SECTION (CINEMATIC PREMIUM) ── */}
+      <section className="relative h-screen min-h-[800px] flex items-center overflow-hidden bg-zinc-950">
+        {/* Background Layer with Parallax & Ken Burns effect */}
+        <div className="absolute inset-0 z-0 scale-125 animate-ken-burns">
           <img 
             src={data.sections.hero?.wallpaper || defaultData.sections.hero?.wallpaper} 
             alt="Hero Background" 
-            className="w-full h-full object-cover opacity-60 dark:opacity-40"
+            className="w-full h-full object-cover opacity-50"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-white dark:from-zinc-950/40 dark:to-zinc-950"></div>
         </div>
+        
+        {/* Gradient Overlays */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-r from-zinc-950 via-zinc-950/60 to-transparent"></div>
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-zinc-950 via-transparent to-transparent"></div>
 
-        {/* Half Blur Overlay (Subtle blur behind text) */}
-        <div
-          className="absolute inset-0 backdrop-blur-[2px]"
-          style={{
-            WebkitMaskImage: 'linear-gradient(to right, black 0%, transparent 100%)',
-            maskImage: 'linear-gradient(to right, black 0%, transparent 100%)'
-          }}
-        />
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-50 rounded-full blur-3xl opacity-30 -mr-48 -mt-48" />
+        <div className="relative z-20 max-w-7xl mx-auto px-6 md:px-12 w-full">
+          <div className="flex flex-col items-start max-w-5xl">
+            <div className="mb-8" />
 
-
-        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full">
-          <div className="flex flex-col items-start text-left max-w-4xl cursor-pointer group" onClick={() => setShowHeroText(!showHeroText)}>
-            {hero?.subtitle && (
-              <div className="flex items-center gap-3 mb-8">
-                <div className="h-px w-12 bg-primary" />
-                <span className="text-xs font-bold uppercase tracking-[0.4em] text-primary">
-                  {t('common.intelligence')}
-                </span>
-              </div>
-            )}
-
-            <h1 className="text-5xl md:text-8xl font-black text-emerald-950 leading-[0.95] tracking-tighter mb-6 reveal-text">
+            <h1 className="text-6xl md:text-9xl font-black text-white leading-[0.85] tracking-tighter mb-10">
               {(() => {
                 const title = (language === 'id' && hero?.title) ? hero.title : t('home.hero_title');
                 const parts = title.split('|');
                 return parts.map((part, i) => (
-                  <span key={i} className="block first:text-primary">
+                  <span key={i} className={`block ${i === 1 ? 'text-primary' : ''} ${i === 2 ? 'text-zinc-500' : ''}`}>
                     {part.trim()}
                   </span>
                 ));
               })()}
             </h1>
 
-            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showHeroText ? 'max-h-96 opacity-100 mt-4 mb-12' : 'max-h-0 opacity-0'}`}>
-              <p className="text-lg md:text-xl text-emerald-900 leading-relaxed max-w-2xl font-medium">
-                {(language === 'id' && hero?.content) ? hero.content : t('home.hero_content')}
-              </p>
-            </div>
-
-            {!showHeroText && (
-              <div className="mt-4 flex items-center gap-2 text-emerald-950/60 group-hover:text-primary transition-colors reveal-text" style={{ animationDelay: '0.3s' }}>
-                <span className="material-symbols-outlined animate-bounce">ads_click</span>
-                <p className="text-sm font-bold tracking-widest uppercase">
-                  {t('home.hero_click')}
-                </p>
+            <div className="max-w-2xl">
+              <div 
+                className="text-xl md:text-2xl text-zinc-300 leading-relaxed font-medium mb-12"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml((language === 'id' && hero?.content) ? hero.content : t('home.hero_content')) }}
+              />
+              
+              <div className="flex flex-wrap gap-6">
+                <a href="#layanan" className="px-10 py-5 bg-primary text-zinc-950 rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-primary/20">
+                  {t('common.get_started') || 'Jelajahi Solusi'}
+                </a>
+                <a href="#tentang-kami" className="px-10 py-5 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/20 transition-all">
+                  {t('common.learn_more') || 'Tentang Kami'}
+                </a>
               </div>
-            )}
+            </div>
           </div>
         </div>
+
+
       </section>
 
       {/* ── STATS SECTION ── */}
@@ -379,7 +382,8 @@ export default function HomePage() {
               </div>
             ) : servicesList.length > 0 ? (
               servicesList.map((service) => (
-                <div key={service.id} className="bg-white p-12 rounded-[20px] border border-emerald-50 shadow-xl hover:shadow-2xl hover:border-emerald-100 transition-all duration-500 hover:-translate-y-4 group cursor-pointer">
+                <div key={service.id} className="glass-card p-12 rounded-[40px] shadow-xl hover:shadow-2xl hover:border-primary/40 transition-all duration-700 hover:-translate-y-4 group cursor-pointer relative overflow-hidden">
+                  <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-700" />
                   <div className="w-14 h-14 bg-emerald-950 rounded-xl flex items-center justify-center mb-10 group-hover:bg-primary transition-all duration-500 shadow-lg">
                     <span className="material-symbols-outlined text-white text-3xl">{service.icon || 'star'}</span>
                   </div>
@@ -419,52 +423,46 @@ export default function HomePage() {
           </div>
           <div 
             className="prose prose-xl dark:prose-invert max-w-none text-emerald-950/80 leading-relaxed font-medium mx-auto"
-            dangerouslySetInnerHTML={{ __html: `<span class="font-bold text-black text-2xl block mb-4">Wahana Data Utama</span>` + ((language === 'id' && services?.content) ? services.content : t('home.services_content')) }} 
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(((language === 'id' && services?.content) ? services.content : t('home.services_content'))) }} 
           />
         </div>
       </section>
 
-      {/* ── TENTANG KAMI SECTION (NEW MODERN STYLE) ── */}
-      <section className="py-32 bg-white" id="tentang-kami">
+      {/* ── TENTANG KAMI SECTION (Garda Style Redesign) ── */}
+      <section className="py-32 bg-zinc-50" id="tentang-kami">
         <div className="max-w-7xl mx-auto px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          <div className="bg-white rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.05)] border border-zinc-100 relative overflow-hidden flex flex-col lg:flex-row">
             
-            {/* Left Column: Visual with Decorative Dots */}
-            <div className="relative order-2 lg:order-1">
-              <div className="relative z-10 bg-[#f0f4f2] rounded-[40px] overflow-hidden shadow-2xl group border border-emerald-50">
+            {/* Left Column: Visual with Accent Background (Enlarged) */}
+            <div className="lg:w-[45%] bg-emerald-50/50 p-8 md:p-12 flex flex-col justify-center relative">
+              <div className="absolute top-0 left-0 w-2 h-full bg-primary/20"></div>
+              <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-2xl border border-white/50">
                 <img 
                   src={intro?.image || "https://wahanadata.co.id/wp-content/uploads/2025/02/direksi_pak-yudi-only.png"} 
-                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="w-full h-auto object-cover scale-105"
                   alt={intro?.title || "Director Profile"}
                 />
               </div>
             </div>
 
-            {/* Right Column: Content Section */}
-            <div className="order-1 lg:order-2">
-              <div className="relative p-10 md:p-16 bg-emerald-50/30 border border-emerald-100 rounded-[20px] overflow-hidden group">
-                {/* Decorative Architectural Elements */}
-                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-24 -mt-24 blur-2xl group-hover:bg-primary/10 transition-colors duration-700" />
+            {/* Right Column: Content (Garda Style) */}
+            <div className="lg:w-[55%] p-12 md:p-20 bg-white flex flex-col justify-center">
+              <div className="space-y-10">
+                <div className="space-y-6">
+
+                  <h2 className="text-4xl md:text-5xl font-black text-emerald-950 tracking-tighter leading-tight">
+                    {(language === 'id' && intro?.title) ? intro.title : t('home.intro_title')}
+                  </h2>
+                </div>
                 
-                <div className="relative z-10 space-y-10">
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-6">
-                      <div className="h-1.5 w-20 bg-primary"></div>
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-black text-emerald-950 tracking-tighter leading-tight drop-shadow-sm">
-                      {(language === 'id' && intro?.title) ? intro.title : t('home.intro_title')}
-                    </h2>
-                  </div>
-                  
-                  <div 
-                    className="prose prose-lg dark:prose-invert max-w-none text-emerald-950/80 leading-relaxed font-medium"
-                    dangerouslySetInnerHTML={{ __html: (language === 'id' && intro?.content) ? intro.content : t('home.intro_content') }} 
-                  />
-                  
-                  <div className="pt-4">
-                    <h4 className="text-2xl font-black text-emerald-950 mb-1">Ir. Yudi A. Idrus, M.M</h4>
-                    <p className="text-primary font-bold uppercase tracking-widest text-xs">{t('home.director_title')}</p>
-                  </div>
+                <div 
+                  className="prose prose-lg dark:prose-invert max-w-none text-emerald-950/70 leading-relaxed font-medium text-justify"
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml((language === 'id' && intro?.content) ? intro.content : t('home.intro_content')) }} 
+                />
+                
+                <div className="pt-8 border-t border-emerald-50">
+                  <h4 className="text-2xl font-black text-emerald-950 mb-1">Ir. Yudi A. Idrus, M.M</h4>
+                  <p className="text-primary font-black uppercase tracking-widest text-xs">{t('home.director_title')}</p>
                 </div>
               </div>
             </div>
@@ -483,7 +481,7 @@ export default function HomePage() {
             <div className="w-16 h-1 bg-primary mx-auto mb-6"></div>
             <div 
               className="prose dark:prose-invert max-w-none text-zinc-600 text-lg mx-auto"
-              dangerouslySetInnerHTML={{ __html: (language === 'id' && trust?.content) ? trust.content : t('home.trust_subtitle') }} 
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml((language === 'id' && trust?.content) ? trust.content : t('home.trust_subtitle')) }} 
             />
           </div>
           <div className="flex gap-3">

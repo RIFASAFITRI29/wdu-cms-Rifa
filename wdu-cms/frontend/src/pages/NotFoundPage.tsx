@@ -21,9 +21,9 @@ export default function NotFoundPage() {
         </h1>
         
         <div className="space-y-4 relative z-10">
-          <h2 className="text-2xl md:text-3xl font-black uppercase tracking-[0.2em]">Data Not Found</h2>
-          <p className={`text-sm md:text-base font-medium max-w-md mx-auto ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-500'}`}>
-            Maaf, halaman yang Anda cari tidak tersedia dalam repositori data kami. Mungkin link tersebut telah kedaluwarsa atau dipindahkan.
+          <h2 className="text-2xl md:text-3xl font-black uppercase tracking-[0.2em]">HALAMAN TIDAK TERSEDIA SEMENTARA</h2>
+          <p className={`text-sm md:text-base font-medium max-w-lg mx-auto ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-500'}`}>
+            Halaman ini sedang dalam proses pemeliharaan dan pembaruan sistem untuk meningkatkan kualitas layanan. Terima kasih atas pengertian Anda.
           </p>
         </div>
 
@@ -45,10 +45,6 @@ export default function NotFoundPage() {
         </div>
       </div>
 
-      {/* Decorative Accents */}
-      <div className="fixed bottom-10 left-10 hidden lg:block">
-         <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-500 vertical-text">WAHANA DATA UTAMA</p>
-      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { pageService } from '../services/pageService';
 import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
+import SEO from '../components/SEO';
 import NotFoundPage from './NotFoundPage';
 
 export default function ContactPage() {
@@ -32,7 +33,8 @@ export default function ContactPage() {
 
         const { data: pageData } = await pageService.getBySlug('kontak');
         if (pageData) {
-          if (pageData.isPublished === false) {
+          const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
+          if (pageData.isPublished === false && !isPreview) {
             setIsNotFound(true);
           }
           setData(pageData);
@@ -47,9 +49,7 @@ export default function ContactPage() {
   }, []);
 
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,9 +71,33 @@ export default function ContactPage() {
 
   return (
     <>
+      <SEO 
+        title={data?.seoTitle || data?.title || 'Hubungi Kami'} 
+        description={data?.seoDescription} 
+        slug="kontak" 
+      />
       <style>{`
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .signature-gradient { background: linear-gradient(135deg, #164220 0%, #2e5a35 100%); }
+        .reveal-up { animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        @keyframes revealUp {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .form-input-focus {
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .form-input-focus:focus ~ .input-border {
+          transform: scaleX(1);
+        }
+        .input-border {
+          height: 2px;
+          background: #164220;
+          width: 100%;
+          transform: scaleX(0);
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          transform-origin: left;
+        }
       `}</style>
 
       {isNotFound ? (
@@ -84,25 +108,27 @@ export default function ContactPage() {
         
         <main>
           {/* Hero Section */}
-          <section className="relative h-[614px] flex items-center overflow-hidden">
-            <div className="absolute inset-0 z-0">
-              <img alt="Wahana Data Utama Team" className="w-full h-full object-cover brightness-50" src="https://images.openai.com/static-rsc-4/ROSruKSgwX-gLUeGWKH-bQAloTnIgCbske6BHhuTArEG6ADqnpcJvG-Fd8rO_KrWE5vaWOERkiNLAJl6o6V11TQNNNMP69Y1DRMb_HHrBs4j3YzZvZJhe_JVixKhYvs-UYAmrYc3h9xrM6-9aUhljjKfV6jB975NGudtfKcZ6iZe-_sVcMN9jYmMkpkwDP8y?purpose=fullsize"/>
-              <div className="absolute inset-0 bg-gradient-to-r from-[#164220]/60 to-transparent"></div>
+          <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-zinc-950">
+        {/* Background Patterns */}
+        <div className="absolute inset-0 z-0 opacity-20">
+          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#15803d 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/10 rounded-full blur-3xl -mr-96 -mt-96"></div>
+        </div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
+          <div className="reveal-up">
+
+            <h1 className="text-7xl md:text-9xl font-black text-white leading-none tracking-tighter mb-10">
+              {data?.title || t('contact.hero_title')}
+            </h1>
+            <div className="flex justify-center items-center gap-8">
+              <div className="h-px w-20 bg-zinc-800"></div>
+              <p className="text-zinc-500 text-xs font-black uppercase tracking-[0.4em]">Connect with Experts</p>
+              <div className="h-px w-20 bg-zinc-800"></div>
             </div>
-            <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
-              <div className="max-w-2xl">
-                <span className="inline-block bg-[#bdefbe] text-[#24502c] px-3 py-1 rounded-sm text-xs font-bold tracking-widest uppercase mb-4 reveal-text" style={{ animationDelay: '0.3s' }}>
-                  {t('contact.hero_label')}
-                </span>
-                <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tighter mb-6 leading-none reveal-text">
-                   {data?.title || t('contact.hero_title')}
-                </h1>
-                <p className="text-xl md:text-2xl text-white font-light leading-relaxed max-w-xl opacity-90 reveal-text" style={{ animationDelay: '0.5s' }}>
-                    {data?.description || t('contact.hero_description')}
-                </p>
-              </div>
-            </div>
-          </section>
+          </div>
+        </div>
+      </section>
 
           {/* Contact Form & Details Section */}
           <section className="py-24 bg-[#f8faf8]">
@@ -179,72 +205,108 @@ export default function ContactPage() {
                           <button onClick={() => setSuccess(false)} className="mt-6 text-[#164220] font-bold underline">{t('contact.send_again')}</button>
                         </div>
                       ) : (
-                        <form onSubmit={handleSubmit} className="space-y-8">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <form onSubmit={handleSubmit} className="space-y-12" autoComplete="off">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                             <div className="relative group">
-                              <label className="block text-xs font-bold uppercase tracking-widest text-[#414940] mb-2 group-focus-within:text-[#164220] transition-colors">{t('contact.full_name')}</label>
-                              <input 
-                                required
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                className="w-full bg-transparent border-0 border-b-2 border-[#c1c9be] focus:border-[#164220] focus:ring-0 px-0 py-3 text-[#191c1b] placeholder-[#414940]/30 transition-all outline-none" 
-                                placeholder="John Doe" 
-                                type="text"
-                              />
+                              <label className="block text-[10px] font-black uppercase tracking-[0.4em] text-[#414940]/60 mb-1 transition-all group-focus-within:text-[#164220] group-focus-within:translate-x-1">
+                                {t('contact.full_name')}
+                              </label>
+                              <div className="relative">
+                                <input 
+                                  required
+                                  name="id_auth_name"
+                                  autoComplete="off"
+                                  value={formData.name}
+                                  onChange={e => setFormData({...formData, name: e.target.value})}
+                                  className="w-full bg-transparent border-b-2 border-[#c1c9be]/30 px-0 py-4 text-xl font-bold text-[#191c1b] placeholder-[#414940]/20 transition-all outline-none focus:placeholder-transparent form-input-focus" 
+                                  placeholder="Nama Lengkap Anda" 
+                                  type="text"
+                                />
+                                <div className="input-border absolute bottom-0 left-0"></div>
+                              </div>
                             </div>
+                            
                             <div className="relative group">
-                              <label className="block text-xs font-bold uppercase tracking-widest text-[#414940] mb-2 group-focus-within:text-[#164220] transition-colors">{t('contact.business_email')}</label>
-                              <input 
-                                required
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="w-full bg-transparent border-0 border-b-2 border-[#c1c9be] focus:border-[#164220] focus:ring-0 px-0 py-3 text-[#191c1b] placeholder-[#414940]/30 transition-all outline-none" 
-                                placeholder="john@company.com" 
-                                type="email"
-                              />
+                              <label className="block text-[10px] font-black uppercase tracking-[0.4em] text-[#414940]/60 mb-1 transition-all group-focus-within:text-[#164220] group-focus-within:translate-x-1">
+                                {t('contact.business_email')}
+                              </label>
+                              <div className="relative">
+                                <input 
+                                  required
+                                  name="id_auth_email"
+                                  autoComplete="off"
+                                  value={formData.email}
+                                  onChange={e => setFormData({...formData, email: e.target.value})}
+                                  className="w-full bg-transparent border-b-2 border-[#c1c9be]/30 px-0 py-4 text-xl font-bold text-[#191c1b] placeholder-[#414940]/20 transition-all outline-none focus:placeholder-transparent form-input-focus" 
+                                  placeholder="email@perusahaan.com" 
+                                  type="email"
+                                />
+                                <div className="input-border absolute bottom-0 left-0"></div>
+                              </div>
                             </div>
-                          </div>
-                          <div className="relative group">
-                            <label className="block text-xs font-bold uppercase tracking-widest text-[#414940] mb-2 group-focus-within:text-[#164220] transition-colors">{t('contact.phone_number')}</label>
-                            <input 
-                              required
-                              name="phone"
-                              value={formData.phone}
-                              onChange={handleChange}
-                              className="w-full bg-transparent border-0 border-b-2 border-[#c1c9be] focus:border-[#164220] focus:ring-0 px-0 py-3 text-[#191c1b] placeholder-[#414940]/30 transition-all outline-none" 
-                              placeholder="+62 ..." 
-                              type="tel"
-                            />
-                          </div>
-                          <div className="relative group">
-                            <label className="block text-xs font-bold uppercase tracking-widest text-[#414940] mb-2 group-focus-within:text-[#164220] transition-colors">{t('contact.message')}</label>
-                            <textarea 
-                              required
-                              name="message"
-                              value={formData.message}
-                              onChange={handleChange}
-                              className="w-full bg-transparent border-0 border-b-2 border-[#c1c9be] focus:border-[#164220] focus:ring-0 px-0 py-3 text-[#191c1b] placeholder-[#414940]/30 transition-all outline-none resize-none" 
-                              placeholder={t('contact.message_placeholder')} 
-                              rows={4}
-                            ></textarea>
                           </div>
 
-                          {error && <p className="text-red-500 text-sm font-bold">{error}</p>}
+                          <div className="relative group">
+                            <label className="block text-[10px] font-black uppercase tracking-[0.4em] text-[#414940]/60 mb-1 transition-all group-focus-within:text-[#164220] group-focus-within:translate-x-1">
+                              {t('contact.phone_number')}
+                            </label>
+                            <div className="relative">
+                              <input 
+                                required
+                                name="id_auth_tel"
+                                autoComplete="new-password"
+                                value={formData.phone}
+                                onChange={e => setFormData({...formData, phone: e.target.value})}
+                                className="w-full bg-transparent border-b-2 border-[#c1c9be]/30 px-0 py-4 text-xl font-bold text-[#191c1b] placeholder-[#414940]/20 transition-all outline-none focus:placeholder-transparent form-input-focus" 
+                                placeholder="+62 8..." 
+                                type="tel"
+                              />
+                              <div className="input-border absolute bottom-0 left-0"></div>
+                            </div>
+                          </div>
 
-                          <div className="flex flex-col md:flex-row items-center gap-8 pt-4">
+                          <div className="relative group">
+                            <label className="block text-[10px] font-black uppercase tracking-[0.4em] text-[#414940]/60 mb-1 transition-all group-focus-within:text-[#164220] group-focus-within:translate-x-1">
+                              {t('contact.message')}
+                            </label>
+                            <div className="relative">
+                              <textarea 
+                                required
+                                name="id_auth_msg"
+                                autoComplete="off"
+                                value={formData.message}
+                                onChange={e => setFormData({...formData, message: e.target.value})}
+                                className="w-full bg-transparent border-b-2 border-[#c1c9be]/30 px-0 py-4 text-xl font-bold text-[#191c1b] placeholder-[#414940]/20 transition-all outline-none focus:placeholder-transparent form-input-focus resize-none" 
+                                placeholder={t('contact.message_placeholder') || 'Bagaimana kami dapat membantu bisnis Anda hari ini?'} 
+                                rows={3}
+                              ></textarea>
+                              <div className="input-border absolute bottom-0 left-0"></div>
+                            </div>
+                          </div>
+
+                          {error && (
+                            <div className="flex items-center gap-2 text-red-600 bg-red-50 p-4 rounded-xl border border-red-100">
+                              <span className="material-symbols-outlined text-lg">error</span>
+                              <p className="text-xs font-black uppercase tracking-widest">{error}</p>
+                            </div>
+                          )}
+
+                          <div className="flex flex-col lg:flex-row items-center justify-between gap-10 pt-10">
                             <button 
                               disabled={loading}
-                              className="signature-gradient text-white px-10 py-4 rounded-sm font-bold tracking-tight shadow-lg hover:shadow-[#164220]/20 transition-all w-full md:w-auto flex items-center justify-center gap-2" 
+                              className="group relative overflow-hidden bg-[#164220] text-white px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-2xl hover:shadow-[#164220]/40 transition-all active:scale-95 disabled:opacity-50 w-full lg:w-auto" 
                               type="submit"
                             >
-                                {loading ? t('contact.sending') : t('contact.send_button')}
-                                {!loading && <span className="material-symbols-outlined">send</span>}
+                                <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                                <span className="relative flex items-center justify-center gap-4">
+                                  {loading ? 'Mengirim...' : 'Kirim Pesan'}
+                                  {!loading && <span className="material-symbols-outlined transition-transform group-hover:translate-x-2">arrow_forward</span>}
+                                </span>
                             </button>
-                            <div className="flex items-center gap-3 text-[#414940]">
-                              <span className="material-symbols-outlined text-[#2e5a35]">verified</span>
-                              <span className="text-xs font-medium">{t('contact.privacy_note')}</span>
+                            
+                            <div className="flex items-center gap-4 text-[#414940]/60 bg-gray-50 px-6 py-3 rounded-2xl border border-gray-100">
+                              <span className="material-symbols-outlined text-[#164220]">lock</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest">Data Anda Aman & Terenkripsi</span>
                             </div>
                           </div>
                         </form>

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
+import { useLanguage } from '../context/LanguageContext';
 export default function LoginPage() {
   const { theme, toggleTheme } = useTheme();
   const [email, setEmail] = useState('');
@@ -10,7 +11,17 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { updateUser } = useUser();
+  const { t } = useLanguage();
   const navigate = useNavigate();
+  
+  // Clear everything on mount to prevent browser from "helping" with old data
+  useEffect(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+    // Also try to clear any autofill by resetting state
+    setEmail('');
+    setPassword('');
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,25 +46,7 @@ export default function LoginPage() {
       }
     } catch (err: any) {
       console.error('Login failed:', err);
-      if (email === 'admin@wdu.co.id' && password === 'admin123') {
-         localStorage.setItem('accessToken', 'mock-token');
-         updateUser({
-           name: 'Super Admin',
-           email: 'admin@wdu.co.id',
-           role: 'SUPER_ADMIN'
-         });
-         navigate('/admin/dashboard');
-      } else if (email === 'editor@wdu.co.id' && password === 'editor123') {
-         localStorage.setItem('accessToken', 'mock-token');
-         updateUser({
-           name: 'Editor',
-           email: 'editor@wdu.co.id',
-           role: 'EDITOR'
-         });
-         navigate('/admin/editor-dashboard');
-      } else {
-        setError('Email atau kata sandi tidak valid. Silakan coba lagi.');
-      }
+      setError('Email atau kata sandi salah. Akses ditolak.');
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +80,7 @@ export default function LoginPage() {
               DATA ADALAH BISNIS KAMI.
             </h1>
             <p className="text-emerald-100/60 text-xl max-w-lg font-medium leading-relaxed">
-              Memberdayakan pengambil keputusan dengan wawasan data real-time dan analitik tingkat lanjut sejak 2006.
+              {t('common.empowering')}
             </p>
           </div>
           
@@ -145,13 +138,15 @@ export default function LoginPage() {
                 Wahana Data Utama
               </p>
 
-              <form onSubmit={handleLogin} className="space-y-6">
+              <form onSubmit={handleLogin} className="space-y-6" autoComplete="off">
                 <div className="space-y-4 group">
                   <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Email Administrator</label>
                   <div className="relative">
                     <input 
                       type="email"
                       required
+                      name="login_identifier_v2"
+                      autoComplete="off"
                       className={`w-full px-6 py-4 rounded-2xl outline-none border transition-all font-bold ${
                         theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:bg-white focus:border-green-500'
                       }`}
@@ -169,6 +164,8 @@ export default function LoginPage() {
                     <input 
                       type="password"
                       required
+                      name="security_key_v2"
+                      autoComplete="new-password"
                       className={`w-full px-6 py-4 rounded-2xl outline-none border transition-all font-bold ${
                         theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:bg-white focus:border-green-500'
                       }`}

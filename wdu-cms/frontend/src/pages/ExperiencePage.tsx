@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { pageService } from '../services/pageService';
 import { useLanguage } from '../context/LanguageContext';
 import { experiencePartnerService, ExperiencePartner } from '../services/experiencePartnerService';
+import SEO from '../components/SEO';
+import { sanitizeHtml } from '../utils/sanitizer';
 import NotFoundPage from './NotFoundPage';
 
 export default function ExperiencePage() {
@@ -35,7 +37,8 @@ export default function ExperiencePage() {
       try {
         const { data: pageData } = await pageService.getBySlug('pengalaman');
         if (pageData) {
-          if (pageData.isPublished === false) {
+          const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
+          if (pageData.isPublished === false && !isPreview) {
             setIsNotFound(true);
           }
           setData(pageData);
@@ -78,6 +81,11 @@ export default function ExperiencePage() {
 
   return (
     <div className="bg-white">
+      <SEO 
+        title={data?.seoTitle || data?.title || 'Pengalaman Kami'} 
+        description={data?.seoDescription} 
+        slug="pengalaman" 
+      />
       <style>{`
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .hero-gradient { background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); }
@@ -89,90 +97,99 @@ export default function ExperiencePage() {
         <NotFoundPage />
       ) : (
         <>
-          {/* ── HERO SECTION ── */}
-      <section className="relative h-[60vh] flex items-center overflow-hidden hero-gradient">
-        <div className="absolute inset-0">
+      <section className="relative h-[80vh] min-h-[600px] flex items-center overflow-hidden bg-zinc-950">
+        <div className="absolute inset-0 z-0 scale-110">
           <img 
             src="https://images.pexels.com/photos/3183153/pexels-photo-3183153.jpeg" 
-            className="w-full h-full object-cover opacity-30 mix-blend-overlay"
+            className="w-full h-full object-cover opacity-60 mix-blend-overlay"
             alt="Experience Hero"
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/60 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent"></div>
         </div>
+        
         <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full">
-           <div className="max-w-4xl">
-              <span className="text-xs font-black uppercase tracking-[0.5em] text-primary mb-6 block animate-pulse">
-                {t('experience.track_record')}
-              </span>
-              <h1 className="text-6xl md:text-9xl font-black text-white tracking-tighter uppercase leading-[0.8] mb-8">
+           <div className="max-w-5xl reveal-up">
+
+              <h1 className="text-7xl md:text-9xl font-black text-white tracking-tighter uppercase leading-[0.85] mb-12">
                 {data?.title || t('experience.hero_title')}
               </h1>
-              <div className="w-32 h-2 bg-primary"></div>
+           </div>
+        </div>
+
+        {/* Decorative corner element */}
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 -skew-x-12 translate-x-1/2"></div>
+      </section>
+
+      {/* ── INTRO SECTION (Garda Style Redesign) ── */}
+      <section className="py-32 bg-zinc-50" id="intro">
+        <div className="max-w-7xl mx-auto px-8">
+           <div className="bg-white rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.05)] border border-zinc-100 relative overflow-hidden flex flex-col lg:flex-row">
+              
+             {/* Left Column: Image with Accent Background */}
+            <div className="lg:w-1/2 bg-emerald-50/50 p-8 md:p-12 flex flex-col justify-center relative">
+              <div className="absolute top-0 left-0 w-2 h-full bg-primary/20"></div>
+              <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-2xl border border-white/50 aspect-[3/2]">
+                <img 
+                  src="https://sis.wahanadata.co.id/img/wdu-building.jpg" 
+                  className="w-full h-full object-cover scale-105"
+                  alt="WDU Building"
+                />
+              </div>
+            </div>
+
+            <div className="lg:w-1/2 p-12 md:p-20 bg-white flex flex-col justify-center">
+               <div 
+                 className="prose prose-xl dark:prose-invert max-w-none text-emerald-950/70 leading-relaxed font-medium text-justify"
+                 dangerouslySetInnerHTML={{ __html: sanitizeHtml((language === 'id' && data?.content?.trim()) ? data.content.split('\n\n')[0] : t('experience.content_1')) }} 
+               />
+             </div>
+
            </div>
         </div>
       </section>
 
-      {/* ── INTRO SECTION (SIDE IMAGE) ── */}
-      <section className="relative py-32 overflow-hidden bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-             <div className="space-y-8">
-                <p className="text-xl md:text-2xl text-emerald-900/70 font-medium leading-relaxed text-justify">
-                  {(language === 'id' && data?.content) ? data.content.split('\n\n')[0] : t('experience.content_1')}
-                </p>
-             </div>
-             
-             {/* Larger Right Image */}
-             <div className="relative group">
-                <div className="rounded-[3rem] overflow-hidden shadow-2xl border border-emerald-100">
-                   <img 
-                     src="https://sis.wahanadata.co.id/img/wdu-building.jpg" 
-                     className="w-full h-[550px] object-cover group-hover:scale-110 transition-transform duration-1000"
-                     alt="WDU Building"
-                   />
-                </div>
-                {/* Decorative tag */}
-                <div className="absolute -bottom-6 -left-6 bg-primary px-8 py-3 rounded-2xl shadow-xl">
-                   <span className="text-xs font-black uppercase tracking-widest text-emerald-950">{t('experience.headquarter')}</span>
-                </div>
-             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── NARRATIVE SECTION ── */}
-      <section className="py-32 bg-zinc-50 border-y border-zinc-100 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            <div className="space-y-10">
-              {((language === 'id' && data?.content) ? data.content.split('\n\n').slice(1) : [
-                t('experience.content_2'),
-                t('experience.content_3'),
-                t('experience.content_4')
-              ]).map((p: string, i: number) => (
-                <p key={i} className="text-lg md:text-xl text-emerald-950/80 leading-relaxed font-medium">
-                  {p}
-                </p>
-              ))}
-              <div className="pt-6">
-                 <div className="flex items-center gap-6 p-8 bg-emerald-950 rounded-[2rem] text-white shadow-2xl">
-                    <span className="material-symbols-outlined text-4xl text-primary">verified</span>
-                    <div>
-                       <p className="text-xs font-black uppercase tracking-widest text-primary mb-1">{t('experience.quality_assured')}</p>
-                       <p className="text-lg font-bold">{t('experience.data_accurate')}</p>
-                    </div>
-                 </div>
-              </div>
-            </div>
-            <div className="relative group">
-              <div className="rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border border-emerald-100/20">
+      {/* ── NARRATIVE SECTION (Garda Style Redesign - Mirrored) ── */}
+      <section className="py-32 bg-white" id="narrative">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="bg-zinc-50 rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.05)] border border-zinc-100 relative overflow-hidden flex flex-col lg:flex-row-reverse">
+            
+            {/* Right Column (Visual): Image with Accent Background */}
+            <div className="lg:w-1/2 bg-emerald-950/5 p-8 md:p-12 flex flex-col justify-center relative">
+              <div className="absolute top-0 right-0 w-2 h-full bg-primary/20"></div>
+              <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-2xl border border-white/50 aspect-[3/2]">
                 <img 
                   src="https://wahanadata.co.id/wp-content/uploads/2025/01/34695135-c70d-4d76-92d5-10c39eb5390f.jpg" 
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-1000"
-                  alt="Wahana Data Utama Team"
+                  className="w-full h-full object-cover scale-105"
+                  alt="WDU Team"
                 />
               </div>
-              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/20 -z-10 rounded-full blur-3xl animate-pulse"></div>
             </div>
+
+            {/* Left Column (Content) */}
+            <div className="lg:w-1/2 p-12 md:p-20 bg-zinc-50 flex flex-col justify-center">
+              <div className="space-y-8">
+                {((language === 'id' && data?.content?.trim() && data.content.split('\n\n').length > 1) ? data.content.split('\n\n').slice(1) : [
+                  t('experience.content_2'),
+                  t('experience.content_3'),
+                  t('experience.content_4')
+                ]).map((p: string, i: number) => (
+                  <p key={i} className="text-lg md:text-xl text-emerald-950/80 leading-relaxed font-medium text-justify">
+                    {p}
+                  </p>
+                ))}
+                
+                <div className="pt-8 border-t border-emerald-100">
+                   <div className="flex items-center gap-6 p-8 bg-emerald-950 rounded-[2.5rem] text-white shadow-2xl">
+                      <span className="material-symbols-outlined text-4xl text-primary">verified</span>
+                      <div>
+                         <p className="text-lg font-bold">{t('experience.data_accurate')}</p>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -203,17 +220,19 @@ export default function ExperiencePage() {
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {dynamicPartners.length > 0 ? dynamicPartners.map((item, index) => (
-              <div key={index} className="min-w-[340px] md:min-w-[420px] shrink-0 snap-center bg-zinc-50/50 rounded-[3rem] p-12 shadow-sm border border-zinc-100 hover:bg-white hover:shadow-2xl transition-all duration-700">
-                 <div className="mb-12 flex justify-between items-center">
-                    <h2 className="text-5xl font-black text-emerald-950 tracking-tighter">{item.year}</h2>
-                    <span className="px-4 py-1 bg-primary text-emerald-950 text-[10px] font-black rounded-full uppercase tracking-widest">
+              <div key={index} className="min-w-[320px] md:min-w-[380px] shrink-0 snap-center bg-white rounded-[3rem] p-8 shadow-sm border border-emerald-50 hover:shadow-2xl transition-all duration-700">
+                 <div className="mb-10 flex justify-between items-center">
+                    <h2 className="text-4xl font-black text-emerald-950 tracking-tighter">{item.year}</h2>
+                    <span className="px-3 py-1 bg-primary/10 text-emerald-950 text-[10px] font-black rounded-full uppercase tracking-widest border border-primary/20">
                        {item.logos.length} {t('experience.partners_count')}
                     </span>
                  </div>
 
-                 <div className="grid grid-cols-3 gap-y-12 gap-x-8 place-items-center opacity-60 hover:opacity-100 transition-opacity">
+                 <div className="grid grid-cols-3 gap-y-10 gap-x-6 place-items-center transition-opacity">
                     {item.logos.map((logo: string, i: number) => (
-                       <img key={i} src={logo} className="max-h-12 max-w-full object-contain transition-all duration-500 cursor-pointer" alt="Partner Logo" />
+                       <div key={i} className="bg-white p-3 rounded-xl shadow-[0_10px_20px_-5px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_-10px_rgba(21,128,61,0.2)] transition-all duration-500 hover:-translate-y-1 cursor-pointer group/icon">
+                          <img src={logo} className="max-h-12 w-auto object-contain transition-transform duration-500 group-hover/icon:scale-110" alt="Partner Logo" />
+                       </div>
                     ))}
                  </div>
               </div>

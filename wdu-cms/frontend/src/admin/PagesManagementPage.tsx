@@ -756,11 +756,39 @@ export default function PagesManagementPage() {
                             </div>
                          </div>
 
-                         {/* Strategic Pillars */}
+                         {/* Professional Section Editor */}
                          <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-100 dark:border-zinc-800 shadow-sm space-y-6">
                             <div className="flex items-center gap-2 mb-2">
                                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                               <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">PILAR STRATEGIS (3 BOX)</h4>
+                               <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">SEKSI: GARDA TERDEPAN PROFESIONAL</h4>
+                            </div>
+                            <div className="space-y-4">
+                               <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">JUDUL SEKSI</label>
+                                  <input 
+                                    className={`w-full px-6 py-4 rounded-xl outline-none border transition-all font-bold ${
+                                      theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-emerald-500 text-white' : 'bg-zinc-50 border-gray-200 focus:border-emerald-500 text-zinc-900'
+                                    }`}
+                                    value={editingPage.sections?.professional?.title || ''}
+                                    onChange={(e) => updateSection('professional', 'title', e.target.value)}
+                                  />
+                               </div>
+                               <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">KONTEN NARASI</label>
+                                  <TiptapEditor 
+                                    content={editingPage.sections?.professional?.content || ''}
+                                    theme={theme}
+                                    onChange={(html) => updateSection('professional', 'content', html)}
+                                  />
+                               </div>
+                            </div>
+                         </div>
+
+                         {/* Why Choose Us Section */}
+                         <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-100 dark:border-zinc-800 shadow-sm space-y-6">
+                            <div className="flex items-center gap-2 mb-2">
+                               <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                               <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">MENGAPA MEMILIH KAMI? (3 BOX)</h4>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                {[0, 1, 2].map(idx => {
@@ -768,7 +796,7 @@ export default function PagesManagementPage() {
                                  return (
                                    <div key={idx} className="p-4 border border-zinc-100 dark:border-zinc-800 rounded-2xl space-y-4">
                                       <div className="space-y-1">
-                                         <label className="text-[8px] font-black text-zinc-400 uppercase">JUDUL PILAR {idx + 1}</label>
+                                         <label className="text-[8px] font-black text-zinc-400 uppercase">POIN KEUNGGULAN {idx + 1}</label>
                                          <input 
                                            className="w-full bg-transparent border-b border-zinc-100 dark:border-zinc-800 py-1 outline-none text-xs font-bold"
                                            value={pillar.title}
@@ -936,6 +964,25 @@ export default function PagesManagementPage() {
                             </div>
                          </div>
                       </div>
+                    ) : editingPage.slug === 'layanan' ? (
+                      <div className="space-y-10">
+                        {/* Data Business Section description for Services */}
+                         <div className="bg-zinc-900/5 dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-100 dark:border-zinc-800 shadow-sm space-y-6">
+                            <div className="flex items-center gap-2 mb-2">
+                               <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                               <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">DESKRIPSI SEKSI "DATA IS OUR BUSINESS" (LAYANAN)</h4>
+                            </div>
+                            <textarea 
+                              rows={3}
+                              className={`w-full px-6 py-4 rounded-xl outline-none border transition-all font-medium resize-none ${
+                                theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-emerald-500 text-white' : 'bg-white border-gray-200 focus:border-emerald-500 text-zinc-900 shadow-sm'
+                              }`}
+                              value={editingPage.sections?.data_business_desc || ''}
+                              onChange={(e) => setEditingPage({...editingPage, sections: {...editingPage.sections, data_business_desc: e.target.value}})}
+                              placeholder="Masukkan deskripsi untuk bagian bawah halaman layanan..."
+                            />
+                         </div>
+                      </div>
                     ) : ['contact', 'kontak'].includes(editingPage.slug) ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                          <div className="space-y-2">
@@ -1058,7 +1105,7 @@ export default function PagesManagementPage() {
               <div className="p-8 border-t border-zinc-100 dark:border-zinc-800 flex gap-4 bg-white dark:bg-zinc-900 sticky bottom-0">
                  <button 
                    type="button"
-                   onClick={() => window.open(editingPage.slug === 'home' ? '/' : `/${editingPage.slug}`, '_blank')}
+                   onClick={() => window.open((editingPage.slug === 'home' ? '/' : `/${editingPage.slug}`) + '?preview=true', '_blank')}
                    className="flex-1 py-4 border-2 border-emerald-600 text-emerald-600 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-50 transition-all flex items-center justify-center gap-2"
                  >
                     <span className="material-symbols-outlined text-lg">visibility</span>

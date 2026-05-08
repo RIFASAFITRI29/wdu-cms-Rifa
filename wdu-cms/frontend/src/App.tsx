@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import PublicLayout from './components/PublicLayout';
 
 // Public Pages
@@ -9,6 +10,8 @@ import ExperiencePage from './pages/ExperiencePage';
 import CollaborationDetailPage from './pages/CollaborationDetailPage';
 import ContactPage from './pages/ContactPage';
 import DynamicPage from './pages/DynamicPage';
+import SisWduPage from './pages/SisWduPage';
+import DownloadProfilePage from './pages/DownloadProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Admin Pages
@@ -34,6 +37,8 @@ import { LanguageProvider } from './context/LanguageContext';
 const ProtectedRoute = ({ children, requiresSuperAdmin = false }: { children: JSX.Element, requiresSuperAdmin?: boolean }) => {
   const { user } = useUser();
   
+  console.log('Security Check:', { userId: user.id, path: window.location.pathname });
+  
   // Security check: Redirect to login if guest
   if (user.id === 'guest') {
     return <Navigate to="/admin/login" replace />;
@@ -57,17 +62,9 @@ function App() {
     <ThemeProvider>
       <UserProvider>
         <LanguageProvider>
+          <Toaster position="top-right" reverseOrder={false} />
           <Routes>
-            <Route element={<PublicLayout />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/tentang-kami" element={<AboutPage />} />
-              <Route path="/layanan" element={<ServicesPage />} />
-              <Route path="/pengalaman" element={<ExperiencePage />} />
-              <Route path="/project/:id" element={<CollaborationDetailPage />} />
-              <Route path="/kontak" element={<ContactPage />} />
-              <Route path="/:slug" element={<DynamicPage />} />
-            </Route>
-            
+            {/* Admin Routes (Priority) */}
             <Route path="/admin" element={<ProtectedRoute><AdminRedirect /></ProtectedRoute>} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
@@ -83,6 +80,22 @@ function App() {
             <Route path="/admin/gallery" element={<ProtectedRoute><GalleryManagementPage /></ProtectedRoute>} />
             <Route path="/admin/experience" element={<ProtectedRoute><ExperienceManagementPage /></ProtectedRoute>} />
             <Route path="/admin/editor-dashboard" element={<ProtectedRoute><EditorDashboard /></ProtectedRoute>} />
+            
+            {/* Fallback for any other admin paths to prevent 404 before security check */}
+            <Route path="/admin/*" element={<Navigate to="/admin/login" replace />} />
+
+            {/* Public Routes */}
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/tentang-kami" element={<AboutPage />} />
+              <Route path="/layanan" element={<ServicesPage />} />
+              <Route path="/pengalaman" element={<ExperiencePage />} />
+              <Route path="/project/:id" element={<CollaborationDetailPage />} />
+              <Route path="/kontak" element={<ContactPage />} />
+              <Route path="/sis-wdu" element={<SisWduPage />} />
+              <Route path="/unduh-profil" element={<DownloadProfilePage />} />
+              <Route path="/:slug" element={<DynamicPage />} />
+            </Route>
 
             {/* Catch-all 404 */}
             <Route path="*" element={<NotFoundPage />} />

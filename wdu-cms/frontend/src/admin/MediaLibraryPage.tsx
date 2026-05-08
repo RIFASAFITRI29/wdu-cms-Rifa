@@ -21,6 +21,7 @@ export default function MediaLibraryPage() {
     mimeType: 'image/png',
     size: 0
   });
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
@@ -44,14 +45,15 @@ export default function MediaLibraryPage() {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.filename || !formData.url) return;
+    if (!selectedFile) return;
     
     try {
       setIsUploading(true);
-      await mediaService.upload(formData);
+      await mediaService.upload(selectedFile, formData.filename);
       await fetchMedia();
       setIsModalOpen(false);
       setFormData({ filename: '', url: '', mimeType: 'image/png', size: 0 });
+      setSelectedFile(null);
     } catch (error) {
       console.error('Upload failed:', error);
       alert('Gagal mengunggah aset.');
@@ -247,6 +249,7 @@ export default function MediaLibraryPage() {
                         e.currentTarget.classList.remove('border-primary', 'bg-primary/5');
                         const file = e.dataTransfer.files?.[0];
                         if (file) {
+                          setSelectedFile(file);
                           const reader = new FileReader();
                           reader.onloadend = () => {
                             setFormData({
@@ -271,6 +274,7 @@ export default function MediaLibraryPage() {
                          onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) {
+                               setSelectedFile(file);
                                const reader = new FileReader();
                                reader.onloadend = () => {
                                   setFormData({

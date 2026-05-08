@@ -2,7 +2,6 @@ import api from './api';
 
 export interface LoginResponse {
   accessToken: string;
-  refreshToken: string;
   user: {
     id: string;
     email: string;
@@ -15,7 +14,6 @@ export const authService = {
   login: async (email: string, password: string) => {
     const { data } = await api.post<LoginResponse>('/auth/login', { email, password });
     localStorage.setItem('accessToken', data.accessToken);
-    localStorage.setItem('refreshToken', data.refreshToken);
     return data;
   },
   
@@ -23,9 +21,12 @@ export const authService = {
     // Fire and forget the backend logout request
     api.post('/auth/logout').catch(() => {});
     
-    // Clear tokens and redirect immediately
+    // Clear ALL security and session data
     localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('admin_user');
+    sessionStorage.clear();
+    
+    // Redirect immediately to clear the context state
     window.location.href = '/admin/login';
   },
 
@@ -34,8 +35,9 @@ export const authService = {
     return data;
   },
 
-  refresh: async (refreshToken: string) => {
-    const { data } = await api.post('/auth/refresh', { refreshToken });
+  refresh: async () => {
+    // Cookie is handled automatically by browser due to withCredentials: true
+    const { data } = await api.post('/auth/refresh');
     return data;
   }
 };

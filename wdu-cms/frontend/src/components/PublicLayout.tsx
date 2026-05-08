@@ -2,6 +2,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
+import { Menu, X, Download, Globe } from 'lucide-react';
 
 interface SiteConfig {
   address?: string;
@@ -23,6 +24,11 @@ export default function PublicLayout() {
   });
   const { language, setLanguage, t } = useLanguage();
   const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location]);
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -74,7 +80,7 @@ export default function PublicLayout() {
               { name: t('nav.about'), path: '/tentang-kami' },
               { name: t('nav.services'), path: '/layanan' },
               { name: t('nav.experience'), path: '/pengalaman' },
-              { name: 'SIS-WDU', path: 'https://sis.wahanadata.co.id/login', isExternal: true },
+              { name: 'SIS-WDU', path: '/sis-wdu' },
               { name: t('nav.contact'), path: '/kontak' }
             ].map((link) => (
               link.isExternal ? (
@@ -131,7 +137,7 @@ export default function PublicLayout() {
             </div>
 
             <Link
-              to="/company-profile-not-found"
+              to="/unduh-profil"
               className="bg-emerald-950 text-white px-5 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase hover:bg-primary transition-all duration-300 flex items-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
             >
               <span className="material-symbols-outlined text-[14px]">download</span>
@@ -139,23 +145,74 @@ export default function PublicLayout() {
             </Link>
           </div>
           
-          {/* Mobile Language Selector */}
-          <div className="md:hidden flex items-center gap-2">
-             <select 
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as any)}
-              className="text-[10px] font-black uppercase tracking-widest text-emerald-950 bg-transparent border border-emerald-50 px-2 py-1 rounded-lg outline-none"
-            >
-              <option value="id">ID</option>
-              <option value="en">EN</option>
-              <option value="jp">JP</option>
-              <option value="zh">ZH</option>
-              <option value="es">ES</option>
-              <option value="ar">AR</option>
-              <option value="fr">FR</option>
-            </select>
+          {/* Mobile Actions */}
+          <div className="md:hidden flex items-center gap-4">
+             <div className="relative">
+                <button 
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="w-10 h-10 flex items-center justify-center text-emerald-950 bg-emerald-50 rounded-xl"
+                >
+                   {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
+             </div>
           </div>
         </nav>
+
+        {/* Mobile Menu Overlay */}
+        <div className={`fixed inset-0 z-[60] bg-white transition-all duration-500 md:hidden ${isMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-10'}`}>
+           <div className="p-6 h-full flex flex-col">
+              <div className="flex justify-between items-center mb-12">
+                 <img src={config.logo_url} className="h-5 w-auto" alt="Logo" />
+                 <button 
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-10 h-10 flex items-center justify-center text-emerald-950 bg-emerald-50 rounded-xl"
+                 >
+                    <X size={20} />
+                 </button>
+              </div>
+
+              <div className="flex flex-col gap-6 mb-12">
+                 {[
+                   { name: t('nav.home'), path: '/' },
+                   { name: t('nav.about'), path: '/tentang-kami' },
+                   { name: t('nav.services'), path: '/layanan' },
+                   { name: t('nav.experience'), path: '/pengalaman' },
+                   { name: 'SIS-WDU', path: '/sis-wdu' },
+                   { name: t('nav.contact'), path: '/kontak' }
+                 ].map((link) => (
+                    <Link 
+                      key={link.path} 
+                      to={link.path} 
+                      className={`text-2xl font-black tracking-tighter uppercase ${location.pathname === link.path ? 'text-emerald-950' : 'text-emerald-950/40'}`}
+                    >
+                       {link.name}
+                    </Link>
+                 ))}
+              </div>
+
+              <div className="mt-auto space-y-6">
+                 <Link
+                   to="/unduh-profil"
+                   className="w-full bg-emerald-950 text-white p-6 rounded-3xl text-xs font-black tracking-widest uppercase flex items-center justify-center gap-3"
+                 >
+                   <Download size={16} />
+                   {t('nav.download_profile')}
+                 </Link>
+
+                 <div className="grid grid-cols-4 gap-2">
+                    {['id', 'en', 'jp', 'zh', 'es', 'ar', 'fr'].map((lang) => (
+                       <button 
+                          key={lang}
+                          onClick={() => setLanguage(lang as any)}
+                          className={`py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest ${language === lang ? 'bg-emerald-950 text-white border-emerald-950' : 'border-zinc-100 text-emerald-950/40'}`}
+                       >
+                          {lang}
+                       </button>
+                    ))}
+                 </div>
+              </div>
+           </div>
+        </div>
       </header>
 
       <main className="flex-1 pt-16">

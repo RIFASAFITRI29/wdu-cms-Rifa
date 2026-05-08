@@ -4,11 +4,17 @@ import prisma from '../prisma';
 const router = Router();
 
 router.post('/', async (req, res) => {
-  const { name, email, phone, subject, message } = req.body;
-  const contact = await prisma.contactMessage.create({
-    data: { name, email, phone, subject, message },
-  });
-  res.json(contact);
+  try {
+    const { name, email, phone, subject, message } = req.body;
+    console.log('Received contact submission:', { name, email, phone, subject, message });
+    const contact = await prisma.contactMessage.create({
+      data: { name, email, phone, subject, message },
+    });
+    res.json(contact);
+  } catch (error: any) {
+    console.error('ERROR in contact submission:', error);
+    res.status(500).json({ error: error.message || 'Failed to save message' });
+  }
 });
 
 router.get('/messages', async (req, res) => {

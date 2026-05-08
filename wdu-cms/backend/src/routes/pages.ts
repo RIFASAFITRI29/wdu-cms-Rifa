@@ -1,7 +1,21 @@
 import { Router } from 'express';
 import prisma from '../prisma';
+import { z } from 'zod';
 
 const router = Router();
+
+const pageSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  content: z.string().optional(),
+  metaTitle: z.string().optional(),
+  metaDesc: z.string().optional(),
+  sections: z.any().optional(),
+  isPublished: z.boolean().optional(),
+  phone: z.string().optional(),
+  email: z.string().optional(),
+  address: z.string().optional(),
+  mapsUrl: z.string().optional(),
+});
 
 router.get('/', async (req, res) => {
   const pages = await prisma.page.findMany({ orderBy: { updatedAt: 'desc' } });
@@ -15,7 +29,11 @@ router.get('/:slug', async (req, res) => {
 });
 
 router.put('/:slug', async (req, res) => {
-  const { title, content, metaTitle, metaDesc, sections, isPublished, phone, email, address, mapsUrl } = req.body;
+  const validation = pageSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({ error: validation.error.errors[0].message });
+  }
+  const { title, content, metaTitle, metaDesc, sections, isPublished, phone, email, address, mapsUrl } = validation.data;
   const page = await prisma.page.update({
     where: { slug: req.params.slug },
     data: { title, content, metaTitle, metaDesc, sections, isPublished, phone, email, address, mapsUrl },
@@ -24,7 +42,11 @@ router.put('/:slug', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { title, slug, content, sections, isPublished, phone, email, address, mapsUrl } = req.body;
+  const validation = pageSchema.extend({ slug: z.string().min(1) }).safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({ error: validation.error.errors[0].message });
+  }
+  const { title, slug, content, sections, isPublished, phone, email, address, mapsUrl } = validation.data;
   try {
     const page = await prisma.page.create({
       data: { 

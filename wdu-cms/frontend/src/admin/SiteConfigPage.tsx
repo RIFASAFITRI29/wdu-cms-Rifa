@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
 import { useTheme } from '../context/ThemeContext';
 import { siteConfigService, SiteConfig } from '../services/siteConfigService';
+import { mediaService } from '../services/mediaService';
 import { useUser } from '../context/UserContext';
 
 export default function SiteConfigPage() {
@@ -160,7 +161,18 @@ export default function SiteConfigPage() {
                         id="copro-upload" 
                         className="hidden" 
                         accept=".pdf"
-                        onChange={() => handleUpdate('company_profile_url', '#simulated-pdf-url')}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                             try {
+                               const { data } = await mediaService.upload(file, 'Company Profile');
+                               handleUpdate('company_profile_url', data.url);
+                               alert('Company Profile berhasil diunggah!');
+                             } catch (err) {
+                               alert('Gagal mengunggah PDF.');
+                             }
+                          }
+                        }}
                       />
                       <label 
                         htmlFor="copro-upload"

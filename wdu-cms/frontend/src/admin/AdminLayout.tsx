@@ -4,6 +4,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
 import { contactService } from '../services/contactService';
 import { authService } from '../services/authService';
+import toast from 'react-hot-toast';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -16,10 +17,51 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
+    // Welcome Toast - Only once per session
+    const hasWelcomed = sessionStorage.getItem('hasWelcomed');
+    
+    if (!hasWelcomed) {
+      toast.success(`Selamat datang, ${user.name}!`, {
+        id: 'welcome-toast',
+        style: {
+          borderRadius: '1.5rem',
+          background: theme === 'dark' ? '#18181b' : '#fff',
+          color: theme === 'dark' ? '#fff' : '#000',
+          border: theme === 'dark' ? '1px solid #27272a' : '1px solid #f3f4f6',
+          fontWeight: 'bold',
+          fontSize: '12px',
+          padding: '16px 24px'
+        },
+        iconTheme: {
+          primary: '#22c55e',
+          secondary: '#fff',
+        },
+      });
+      sessionStorage.setItem('hasWelcomed', 'true');
+    }
+  }, [user.name, theme]); // Added dependencies for correct theme/user rendering if it changes
+
+  useEffect(() => {
     const fetchUnread = async () => {
       try {
         const { data } = await contactService.getAll();
         const count = data.filter(m => !m.isRead).length;
+        
+        // Show notification if there are NEW unread messages
+        if (count > unreadCount && unreadCount !== 0) {
+          toast('Anda memiliki pesan masuk baru!', {
+            icon: '📩',
+            style: {
+              borderRadius: '1.5rem',
+              background: '#22c55e',
+              color: '#fff',
+              fontWeight: 'bold',
+              fontSize: '12px',
+              padding: '16px 24px'
+            }
+          });
+        }
+        
         setUnreadCount(count);
       } catch (error) {
         console.error('Failed to fetch unread count', error);
@@ -68,13 +110,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'
       }`}>
         <div className="p-6">
-          <Link to="/admin" className="flex flex-col">
-            <span className={`text-xl font-bold tracking-tight ${theme === 'dark' ? 'text-primary' : 'text-green-800'}`}>
-              {isSuperAdmin ? 'WDU Admin' : 'WDU Editor'}
-            </span>
-            <span className={`text-[10px] font-bold uppercase tracking-widest ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-400'}`}>
-              {isSuperAdmin ? 'Management Suite' : 'Workspace'}
-            </span>
+          <Link to="/admin" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl bg-white/10 p-2 flex items-center justify-center transition-all group-hover:scale-110 shadow-lg border border-white/5">
+              <img src="https://wahanadata.co.id/img/wdu-ijo.png" alt="WDU Logo" className="w-full h-full object-contain" />
+            </div>
+            <div className="flex flex-col">
+              <span className={`text-sm font-black tracking-tighter leading-none ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {isSuperAdmin ? 'ADMIN CMS' : 'EDITOR HUB'}
+              </span>
+              <span className={`text-[8px] font-black uppercase tracking-[0.3em] mt-1 ${theme === 'dark' ? 'text-primary' : 'text-green-600'}`}>
+                Wahana Data Utama
+              </span>
+            </div>
           </Link>
         </div>
         <nav className="flex-1 px-4 py-4 space-y-8 overflow-y-auto custom-scrollbar">

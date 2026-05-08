@@ -2,6 +2,8 @@ import * as React from 'react';
 import AdminLayout from './AdminLayout';
 import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
+import { userService } from '../services/userService';
+import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
   const { theme } = useTheme();
@@ -25,21 +27,66 @@ export default function ProfilePage() {
 
     try {
       setIsSaving(true);
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800));
       
-      updateUser({
+      const updateData: any = {
         name: formData.name,
-        email: formData.email
-      });
+        email: formData.email,
+        avatar: user.avatar // Include avatar if it was changed
+      };
       
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      if (formData.newPassword) {
+        updateData.password = formData.newPassword;
+      }
+
+      // Save to database
+      await userService.updateProfile(updateData);
+      
+      // Update local context
+      updateUser(updateData);
+      
+      toast.success('Profil berhasil diperbarui!', {
+        style: {
+          borderRadius: '1.5rem',
+          background: theme === 'dark' ? '#18181b' : '#fff',
+          color: theme === 'dark' ? '#fff' : '#000',
+          border: theme === 'dark' ? '1px solid #27272a' : '1px solid #f3f4f6',
+          fontWeight: 'bold',
+          fontSize: '12px',
+          padding: '16px 24px'
+        }
+      });
       setFormData(prev => ({ ...prev, newPassword: '', confirmPassword: '' }));
-    } catch (error) {
-      alert('Gagal memperbarui profil.');
+    } catch (error: any) {
+      toast.error(`Gagal: ${error.response?.data?.error || error.message}`);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Avatar = reader.result as string;
+        
+        // Instant preview in UI
+        updateUser({ avatar: base64Avatar });
+        
+        // Also save to DB immediately for photo
+        try {
+          await userService.updateProfile({ avatar: base64Avatar });
+        } catch (err) {
+          console.error('Failed to save avatar to DB', err);
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -49,6 +96,13 @@ export default function ProfilePage() {
 
   return (
     <AdminLayout>
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        className="hidden" 
+        accept="image/*" 
+        onChange={handleFileChange} 
+      />
       <div className="space-y-12 max-w-7xl mx-auto pb-20">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
            <div className="reveal-up">
@@ -70,11 +124,17 @@ export default function ProfilePage() {
               <div className={`p-10 rounded-[3rem] border flex flex-col items-center text-center transition-all duration-500 ${
                 theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-100 shadow-xl'
               }`}>
-                 <div className={`w-32 h-32 rounded-[2.5rem] flex items-center justify-center text-4xl font-black mb-8 shadow-2xl relative group overflow-hidden ${
+                 <div 
+                   onClick={handleAvatarClick}
+                   className={`w-32 h-32 rounded-[2.5rem] flex items-center justify-center text-4xl font-black mb-8 shadow-2xl relative group overflow-hidden cursor-pointer ${
                    theme === 'dark' ? 'bg-zinc-800 text-primary' : 'bg-green-600 text-white'
                  }`}>
-                    {initials}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      initials
+                    )}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                        <span className="material-symbols-outlined text-white">photo_camera</span>
                     </div>
                  </div>
@@ -129,30 +189,30 @@ export default function ProfilePage() {
               <div className={`w-full h-px ${theme === 'dark' ? 'bg-zinc-800' : 'bg-gray-50'}`} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                   <div className="space-y-4">
-                      <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Password Baru</label>
-                      <input 
-                        type="password"
-                        className={`w-full px-8 py-5 rounded-3xl outline-none border transition-all font-bold ${
-                          theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:border-green-500'
-                        }`}
-                        placeholder="••••••••"
-                        value={formData.newPassword}
-                        onChange={e => setFormData({...formData, newPassword: e.target.value})}
-                      />
-                   </div>
-                   <div className="space-y-4">
-                      <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Konfirmasi Password</label>
-                      <input 
-                        type="password"
-                        className={`w-full px-8 py-5 rounded-3xl outline-none border transition-all font-bold ${
-                          theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:border-green-500'
-                        }`}
-                        placeholder="••••••••"
-                        value={formData.confirmPassword}
-                        onChange={e => setFormData({...formData, confirmPassword: e.target.value})}
-                      />
-                   </div>
+                    <div className="space-y-4">
+                       <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Password Baru (Kosongkan jika tidak diubah)</label>
+                       <input 
+                         type="password"
+                         className={`w-full px-8 py-5 rounded-3xl outline-none border transition-all font-bold ${
+                           theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:border-green-500'
+                         }`}
+                         placeholder="Isi hanya jika ingin ganti password"
+                         value={formData.newPassword}
+                         onChange={e => setFormData({...formData, newPassword: e.target.value})}
+                       />
+                    </div>
+                    <div className="space-y-4">
+                       <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Konfirmasi Password Baru</label>
+                       <input 
+                         type="password"
+                         className={`w-full px-8 py-5 rounded-3xl outline-none border transition-all font-bold ${
+                           theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:border-green-500'
+                         }`}
+                         placeholder="Ulangi password baru"
+                         value={formData.confirmPassword}
+                         onChange={e => setFormData({...formData, confirmPassword: e.target.value})}
+                       />
+                    </div>
                 </div>
 
                 {(user.role === 'SUPER_ADMIN') && (
