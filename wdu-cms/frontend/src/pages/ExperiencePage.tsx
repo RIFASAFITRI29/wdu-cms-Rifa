@@ -91,6 +91,8 @@ export default function ExperiencePage() {
         .hero-gradient { background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); }
         .text-reveal { animation: reveal 1s cubic-bezier(0.77, 0, 0.175, 1) forwards; }
         @keyframes reveal { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
       {isNotFound ? (
@@ -194,47 +196,69 @@ export default function ExperiencePage() {
         </div>
       </section>
 
-      {/* ── TIMELINE LOGOS SECTION ── */}
-      <section className="py-32 px-6 md:px-12 bg-white overflow-hidden">
+      {/* ── TIMELINE LOGOS SECTION (PENCAPAIAN) ── */}
+      <section className="py-24 px-6 md:px-12 bg-slate-50 overflow-hidden" id="milestones">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-            <div>
-              <h3 className="text-5xl font-black text-emerald-950 tracking-tighter uppercase mb-4">{t('experience.milestones_title')}</h3>
-              <p className="text-emerald-900/60 font-bold max-w-xl text-lg uppercase tracking-widest">
-                {t('experience.milestones_subtitle')}
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div className="space-y-2">
+              <h2 className="text-4xl md:text-5xl font-black text-emerald-950 tracking-tight uppercase">
+                {language === 'id' ? 'Pencapaian' : t('experience.milestones_title')}
+              </h2>
+              <p className="text-emerald-900/60 font-bold tracking-widest text-sm md:text-base uppercase">
+                {language === 'id' ? 'Mitra Strategis & Kolaborasi Nasional' : t('experience.milestones_subtitle')}
               </p>
             </div>
-            <div className="flex gap-4">
-              <button onClick={() => scroll('left')} className="w-16 h-16 rounded-2xl bg-zinc-100 text-emerald-950 flex items-center justify-center hover:bg-emerald-950 hover:text-white transition-all shadow-sm active:scale-95">
-                <span className="material-symbols-outlined text-2xl">west</span>
+            
+            {/* Navigation Controls */}
+            <div className="flex space-x-3">
+              <button 
+                onClick={() => scroll('left')}
+                aria-label="Previous" 
+                className="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm text-emerald-950 hover:bg-slate-50 transition-colors active:scale-95"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
               </button>
-              <button onClick={() => scroll('right')} className="w-16 h-16 rounded-2xl bg-zinc-100 text-emerald-950 flex items-center justify-center hover:bg-emerald-950 hover:text-white transition-all shadow-sm active:scale-95">
-                <span className="material-symbols-outlined text-2xl">east</span>
+              <button 
+                onClick={() => scroll('right')}
+                aria-label="Next" 
+                className="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm text-emerald-950 hover:bg-slate-50 transition-colors active:scale-95"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
               </button>
             </div>
           </div>
 
+          {/* Chronological Cards Container */}
           <div 
             ref={scrollRef}
-            className="flex overflow-x-auto gap-8 pb-16 snap-x snap-mandatory scrollbar-hide"
+            className="flex overflow-x-auto gap-8 pb-8 hide-scrollbar snap-x no-scrollbar"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {dynamicPartners.length > 0 ? dynamicPartners.map((item, index) => (
-              <div key={index} className="min-w-[320px] md:min-w-[380px] shrink-0 snap-center bg-white rounded-[3rem] p-8 shadow-sm border border-emerald-50 hover:shadow-2xl transition-all duration-700">
-                 <div className="mb-10 flex justify-between items-center">
-                    <h2 className="text-4xl font-black text-emerald-950 tracking-tighter">{item.year}</h2>
-                    <span className="px-3 py-1 bg-primary/10 text-emerald-950 text-[10px] font-black rounded-full uppercase tracking-widest border border-primary/20">
-                       {item.logos.length} {t('experience.partners_count')}
-                    </span>
-                 </div>
+              <div 
+                key={index} 
+                className="flex-shrink-0 w-full sm:w-[380px] snap-center bg-white rounded-[40px] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-50"
+              >
+                <div className="flex justify-between items-center mb-10">
+                  <h3 className="text-5xl font-black text-emerald-950">{item.year}</h3>
+                  <span className="px-4 py-1 rounded-full bg-emerald-50 text-emerald-900/60 text-xs font-bold tracking-widest border border-emerald-100 uppercase">
+                    {item.logos.length} {t('experience.partners_count')}
+                  </span>
+                </div>
 
-                 <div className="grid grid-cols-3 gap-y-10 gap-x-6 place-items-center transition-opacity">
-                    {item.logos.map((logo: string, i: number) => (
-                       <div key={i} className="bg-white p-3 rounded-xl shadow-[0_10px_20px_-5px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_-10px_rgba(21,128,61,0.2)] transition-all duration-500 hover:-translate-y-1 cursor-pointer group/icon">
-                          <img src={logo} className="max-h-12 w-auto object-contain transition-transform duration-500 group-hover/icon:scale-110" alt="Partner Logo" />
-                       </div>
-                    ))}
-                 </div>
+                {/* Logo Grid */}
+                <div className="grid grid-cols-3 gap-6">
+                  {item.logos.map((logo: string, i: number) => (
+                    <div key={i} className="aspect-square bg-white rounded-2xl shadow-sm border border-slate-50 flex items-center justify-center p-4 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+                      <img src={logo} className="max-w-full h-auto object-contain" alt="Partner Logo" />
+                    </div>
+                  ))}
+                </div>
               </div>
             )) : (
               <div className="w-full text-center py-20 text-zinc-300 font-black uppercase tracking-[0.5em] text-sm animate-pulse">

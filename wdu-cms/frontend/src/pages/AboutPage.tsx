@@ -92,61 +92,128 @@ export default function AboutPage() {
       ) : (
         <>
           {/* ── HERO SECTION ── */}
-      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
+      {/* ── HERO SECTION: ELITE BRANDING ── */}
+      <section className="relative h-[95vh] flex items-center justify-center overflow-hidden bg-zinc-950">
+        {/* Advanced Background Layers */}
+        <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.pexels.com/photos/3183158/pexels-photo-3183158.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
-            className="w-full h-full object-cover"
-            alt="About Hero"
+            src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2070" 
+            className="w-full h-full object-cover opacity-30 animate-ken-burns scale-110"
+            alt="Intelligence Background"
           />
-
-          <div className="absolute inset-0 bg-emerald-950/60 backdrop-blur-[1px]" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-zinc-950 via-zinc-950/60 to-emerald-950/20" />
+          
+          {/* Decorative Mesh Gradient */}
+          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[150px] animate-pulse"></div>
+          <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-emerald-900/10 rounded-full blur-[150px] animate-pulse delay-1000"></div>
         </div>
-        <div className="relative z-10 text-center px-6">
-           <span className="text-sm font-black uppercase tracking-[0.5em] text-white/80 mb-4 block">
-           </span>
-           <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase">
-              {data?.sections?.hero?.title || data?.title || t('about.hero_title')}
-           </h1>
-        </div>
-      </section>
 
-      {/* ── SECTION: DYNAMIC COMPANY OVERVIEW (Garda Style Redesign) ── */}
-      <section className="py-32 bg-white relative overflow-hidden" id="about">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-50/50 rounded-full blur-[150px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
-        
-        <div className="max-w-7xl mx-auto px-8">
-           <div className="bg-zinc-50 rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.05)] border border-zinc-100 relative overflow-hidden flex flex-col lg:flex-row">
-              
-              {/* Left Column: Visual with Accent Background */}
-              <div className="lg:w-1/2 bg-emerald-50/50 p-8 md:p-12 flex flex-col justify-center relative">
-                 <div className="absolute top-0 left-0 w-2 h-full bg-primary/20"></div>
-                 <div className="relative z-10 rounded-[3.5rem] overflow-hidden shadow-2xl border border-white/50 aspect-[3/2]">
-                    <img 
-                      className="w-full h-full object-cover scale-105" 
-                      alt="Corporate Environment" 
-                      src={data?.sections?.intro?.image || "https://sis.wahanadata.co.id/img/wdu-building.jpg"} 
-                    />
-                 </div>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-8 flex flex-col items-center">
+           {/* Floating Badge */}
+           <div className="reveal-up mb-12">
+              <div className="px-6 py-2 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 flex items-center gap-3 shadow-2xl">
+                 <div className="w-2 h-2 bg-primary rounded-full animate-ping"></div>
+                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/90">WDU Precision Intelligence</span>
               </div>
-
-              {/* Right Column: Content */}
-              <div className="lg:w-1/2 p-12 md:p-20 bg-zinc-50 flex flex-col justify-center">
-                 <div className="space-y-10">
-                    <h2 className="text-5xl md:text-7xl font-black text-emerald-950 tracking-tighter leading-tight uppercase">
-                       {t('about.intro_title')}
-                    </h2>
-                    
-                    <div 
-                      className="prose prose-xl dark:prose-invert max-w-none text-emerald-950/70 leading-relaxed font-medium text-justify"
-                      dangerouslySetInnerHTML={{ __html: sanitizeHtml((language === 'id' && data?.content?.trim()) ? (data.sections?.intro_content || data.content) : t('about.intro_content')) }} 
-                    />
-                 </div>
-              </div>
-
            </div>
+           
+           <div className="text-center space-y-6 relative">
+              {/* Massive Title with Mixed Styles */}
+              <h1 className="text-[12vw] lg:text-[10vw] font-black leading-[0.8] tracking-tighter uppercase reveal-up select-none">
+                 <span className="block text-white">TENTANG</span>
+                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-primary/80">KAMI.</span>
+                 <span className="block text-white opacity-10 absolute -bottom-8 left-1/2 -translate-x-1/2 blur-sm pointer-events-none">KAMI.</span>
+              </h1>
+            </div>
+
+           {/* Floating Data Nodes (Decorative) */}
+           <div className="absolute top-1/4 -left-12 hidden xl:block animate-float reveal-up" style={{ animationDelay: '0.5s' }}>
+              <div className="p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl">
+                 <span className="material-symbols-outlined text-primary text-3xl mb-2">query_stats</span>
+                 <div className="text-[10px] font-black text-white/40 uppercase tracking-widest">Accuracy</div>
+                 <div className="text-xl font-black text-white">99.9%</div>
+              </div>
+           </div>
+
+           <div className="absolute bottom-1/4 -right-12 hidden xl:block animate-float-slow reveal-up" style={{ animationDelay: '0.7s' }}>
+              <div className="p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl">
+                 <span className="material-symbols-outlined text-emerald-400 text-3xl mb-2">verified</span>
+                 <div className="text-[10px] font-black text-white/40 uppercase tracking-widest">Experience</div>
+                 <div className="text-xl font-black text-white">18+ Yrs</div>
+              </div>
+           </div>
+
         </div>
       </section>
+
+      <style>{`
+        @keyframes ken-burns {
+          0% { transform: scale(1.1) rotate(0deg); }
+          100% { transform: scale(1.2) rotate(1deg); }
+        }
+        .animate-ken-burns { animation: ken-burns 60s linear infinite alternate; }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        
+        @keyframes float-slow {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-15px); }
+        }
+        .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
+
+        @keyframes scroll-line {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100%); }
+        }
+        .animate-scroll-line { animation: scroll-line 2s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+
+        @keyframes revealUp {
+          from { opacity: 0; transform: translateY(60px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .reveal-up { opacity: 0; animation: revealUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+      `}</style>
+
+       {/* ── SECTION: DYNAMIC COMPANY OVERVIEW (Garda Style Redesign) ── */}
+       <section className="py-32 bg-white relative overflow-hidden" id="about">
+         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-50/50 rounded-full blur-[150px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
+         
+         <div className="max-w-7xl mx-auto px-8">
+            <div className="bg-zinc-50 rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.05)] border border-zinc-100 relative overflow-hidden flex flex-col lg:flex-row">
+               
+               {/* Left Column: Visual with Accent Background */}
+               <div className="lg:w-1/2 bg-emerald-50/50 p-8 md:p-12 flex flex-col justify-center relative">
+                  <div className="absolute top-0 left-0 w-2 h-full bg-primary/20"></div>
+                  <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl border border-white/50">
+                     <img 
+                       className="w-full h-auto" 
+                       alt="Corporate Environment" 
+                       src={data?.sections?.intro?.image || "https://sis.wahanadata.co.id/img/wdu-building.jpg"} 
+                     />
+                  </div>
+               </div>
+ 
+               {/* Right Column: Content */}
+               <div className="lg:w-1/2 p-12 md:p-20 bg-zinc-50 flex flex-col justify-center">
+                  <div className="space-y-10">
+                     <h2 className="text-5xl md:text-7xl font-black text-emerald-950 tracking-tighter leading-tight uppercase">
+                        {t('about.intro_title')}
+                     </h2>
+                     
+                     <div 
+                       className="prose prose-xl dark:prose-invert max-w-none text-emerald-950/70 leading-relaxed font-medium text-justify"
+                       dangerouslySetInnerHTML={{ __html: sanitizeHtml((language === 'id' && data?.content?.trim()) ? (data.sections?.intro_content || data.content) : t('about.intro_content')) }} 
+                     />
+                  </div>
+               </div>
+ 
+            </div>
+         </div>
+       </section>
 
 
       <section className="relative py-48 overflow-hidden bg-zinc-950">
@@ -303,9 +370,9 @@ export default function AboutPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
                   {directors.slice(0, 2).map((leader: any, i: number) => (
                     <div key={i} className="group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col border border-emerald-900/5">
-                      <div className="w-full aspect-[3/2] bg-[#f4f5f5] relative flex items-end justify-center overflow-hidden">
+                      <div className="w-full aspect-[3/2] bg-white relative flex items-end justify-center overflow-hidden">
                         {leader.image ? (
-                          <img src={leader.image} alt={leader.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <img src={leader.image} alt={leader.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
                         ) : (
                           <div className="w-full h-full flex flex-col items-center justify-center">
                             <span className="material-symbols-outlined text-7xl text-emerald-900/20 mb-2">person</span>
@@ -331,9 +398,9 @@ export default function AboutPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     {directors.slice(2).map((leader: any, i: number) => (
                       <div key={i} className="group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col border border-emerald-900/5">
-                        <div className="w-full aspect-[3/2] bg-[#f4f5f5] relative flex items-end justify-center overflow-hidden">
+                        <div className="w-full aspect-[3/2] bg-white relative flex items-end justify-center overflow-hidden">
                           {leader.image ? (
-                            <img src={leader.image} alt={leader.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                            <img src={leader.image} alt={leader.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
                           ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center">
                               <span className="material-symbols-outlined text-7xl text-emerald-900/20 mb-2">person</span>

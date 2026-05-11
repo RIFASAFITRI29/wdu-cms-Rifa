@@ -189,24 +189,26 @@ export default function ProfilePage() {
               <div className={`w-full h-px ${theme === 'dark' ? 'bg-zinc-800' : 'bg-gray-50'}`} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                     <div className="space-y-4">
+                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Password Baru</label>
+                        <input 
+                          type="password"
+                          autoComplete="new-password"
+                          className={`w-full px-8 py-5 rounded-3xl outline-none border transition-all font-bold ${
+                            theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:bg-white focus:border-green-500'
+                          }`}
+                          placeholder="Kosongkan jika tidak ingin ganti"
+                          value={formData.newPassword}
+                          onChange={e => setFormData({...formData, newPassword: e.target.value})}
+                        />
+                     </div>
                     <div className="space-y-4">
-                       <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Password Baru (Kosongkan jika tidak diubah)</label>
+                       <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Konfirmasi Password</label>
                        <input 
                          type="password"
+                         autoComplete="new-password"
                          className={`w-full px-8 py-5 rounded-3xl outline-none border transition-all font-bold ${
-                           theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:border-green-500'
-                         }`}
-                         placeholder="Isi hanya jika ingin ganti password"
-                         value={formData.newPassword}
-                         onChange={e => setFormData({...formData, newPassword: e.target.value})}
-                       />
-                    </div>
-                    <div className="space-y-4">
-                       <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Konfirmasi Password Baru</label>
-                       <input 
-                         type="password"
-                         className={`w-full px-8 py-5 rounded-3xl outline-none border transition-all font-bold ${
-                           theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:border-green-500'
+                           theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:bg-white focus:border-green-500'
                          }`}
                          placeholder="Ulangi password baru"
                          value={formData.confirmPassword}

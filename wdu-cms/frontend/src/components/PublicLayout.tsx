@@ -2,7 +2,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { Menu, X, Download, Globe } from 'lucide-react';
+import { Menu, X, Download } from 'lucide-react';
 
 interface SiteConfig {
   address?: string;
@@ -11,6 +11,8 @@ interface SiteConfig {
   copyright?: string;
   logo_url?: string;
   company_profile_url?: string;
+  social_instagram?: string;
+  social_youtube?: string;
 }
 
 export default function PublicLayout() {
@@ -76,12 +78,12 @@ export default function PublicLayout() {
           {/* Nav Links - Centered & Balanced */}
           <div className="hidden md:flex flex-1 justify-center items-center gap-6 lg:gap-8">
             {[
-              { name: t('nav.home'), path: '/' },
-              { name: t('nav.about'), path: '/tentang-kami' },
-              { name: t('nav.services'), path: '/layanan' },
-              { name: t('nav.experience'), path: '/pengalaman' },
-              { name: 'SIS-WDU', path: '/sis-wdu' },
-              { name: t('nav.contact'), path: '/kontak' }
+              { name: t('nav.home'), path: '/', isExternal: false },
+              { name: t('nav.about'), path: '/tentang-kami', isExternal: false },
+              { name: t('nav.services'), path: '/layanan', isExternal: false },
+              { name: t('nav.experience'), path: '/pengalaman', isExternal: false },
+              { name: 'SIS-WDU', path: '/sis-wdu', isExternal: false },
+              { name: t('nav.contact'), path: '/kontak', isExternal: false }
             ].map((link) => (
               link.isExternal ? (
                 <a 
@@ -260,14 +262,14 @@ export default function PublicLayout() {
           <div className="md:col-span-4 flex flex-col items-start md:items-end space-y-4">
             <h4 className="text-white font-bold tracking-widest uppercase text-[9px]">{t('footer.social')}</h4>
             <div className="flex gap-4">
-              <a href="https://www.instagram.com/wahanadatautama/" target="_blank" rel="noopener noreferrer" className="group">
+              <a href={config.social_instagram || "https://www.instagram.com/wahanadatautama/"} target="_blank" rel="noopener noreferrer" className="group">
                 <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
                   <svg className="w-4 h-4 fill-white group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                   </svg>
                 </div>
               </a>
-              <a href="https://www.youtube.com/@wahanadatautama" target="_blank" rel="noopener noreferrer" className="group">
+              <a href={config.social_youtube || "https://www.youtube.com/@wahanadatautama9110"} target="_blank" rel="noopener noreferrer" className="group">
                 <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
                   <svg className="w-4 h-4 fill-white/60 group-hover:fill-white" viewBox="0 0 24 24">
                     <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>

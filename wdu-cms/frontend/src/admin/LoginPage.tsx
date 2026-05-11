@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
-import { useLanguage } from '../context/LanguageContext';
 export default function LoginPage() {
   const { theme, toggleTheme } = useTheme();
   const [email, setEmail] = useState('');
@@ -11,20 +10,22 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { updateUser } = useUser();
-  const { t } = useLanguage();
   const navigate = useNavigate();
   
-  // Clear everything on mount to prevent browser from "helping" with old data
+  // Stable randomized IDs to prevent autofill WITHOUT causing focus loss on re-render
+  const uId = React.useMemo(() => `u_${Math.random().toString(36).substring(7)}`, []);
+  const pId = React.useMemo(() => `p_${Math.random().toString(36).substring(7)}`, []);
+  const nName = React.useMemo(() => `n_${Math.random().toString(36).substring(7)}`, []);
+  const sName = React.useMemo(() => `s_${Math.random().toString(36).substring(7)}`, []);
+  
+  // Reset state on mount to prevent stale data
   useEffect(() => {
-    localStorage.clear();
-    sessionStorage.clear();
-    // Also try to clear any autofill by resetting state
     setEmail('');
     setPassword('');
   }, []);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (e?: any) => {
+    if (e && e.preventDefault) e.preventDefault();
     setIsLoading(true);
     setError('');
     
@@ -60,7 +61,7 @@ export default function LoginPage() {
       <div className="hidden lg:flex lg:w-2/3 relative overflow-hidden bg-emerald-950">
         <div className="absolute inset-0 z-0">
           <img 
-            src="/brain/bd22b2e2-7772-4373-b00d-06e6f1ad557e/login_bg_abstract_data_1777962575994.png" 
+            src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
             className="w-full h-full object-cover opacity-60 mix-blend-overlay"
             alt="Data Abstract"
           />
@@ -70,17 +71,17 @@ export default function LoginPage() {
         <div className="relative z-10 p-16 flex flex-col justify-between w-full h-full">
           <div>
             <div className="flex items-center gap-4 mb-12">
-               <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.3)]">
-                  <span className="material-symbols-outlined text-zinc-950 font-bold">query_stats</span>
+               <div className="w-16 h-16 bg-white/5 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/10 shadow-2xl">
+                  <img src="https://wahanadata.co.id/img/wdu-ijo.png" className="w-12 h-12 object-contain" alt="WDU Logo" />
                </div>
                <span className="text-white text-xl font-black tracking-tighter uppercase">Intelijen WDU</span>
             </div>
             
-            <h1 className="text-6xl xl:text-7xl font-black text-white leading-[0.85] tracking-tighter mb-8">
-              DATA ADALAH BISNIS KAMI.
+            <h1 className="text-6xl xl:text-7xl font-black text-white leading-[0.85] tracking-tighter mb-10 uppercase opacity-90">
+              DATA IS OUR<br /><span className="text-primary">BUSINESS.</span>
             </h1>
             <p className="text-emerald-100/60 text-xl max-w-lg font-medium leading-relaxed">
-              {t('common.empowering')}
+              Memberdayakan organisasi melalui inteligensi data yang presisi sejak 2006.
             </p>
           </div>
           
@@ -107,8 +108,6 @@ export default function LoginPage() {
       <div className="w-full lg:w-[30%] flex flex-col relative z-10">
         {/* Toggles */}
         <div className="p-6 flex justify-end gap-3">
-
-
           <button 
             onClick={toggleTheme}
             className={`p-3 rounded-2xl border transition-all hover:scale-110 active:scale-95 ${
@@ -125,8 +124,8 @@ export default function LoginPage() {
           <div className="max-w-[320px] w-full space-y-6">
             <div>
               <div className="lg:hidden flex items-center gap-3 mb-8">
-                 <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                    <span className="material-symbols-outlined text-zinc-950 text-xl font-bold">query_stats</span>
+                 <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
+                    <img src="https://wahanadata.co.id/img/wdu-ijo.png" className="w-7 h-7 object-contain" alt="WDU" />
                  </div>
                  <span className={`text-lg font-black tracking-tighter uppercase ${theme === 'dark' ? 'text-white' : 'text-emerald-950'}`}>WDU</span>
               </div>
@@ -138,60 +137,64 @@ export default function LoginPage() {
                 Wahana Data Utama
               </p>
 
-              <form onSubmit={handleLogin} className="space-y-6" autoComplete="off">
+              <div className="space-y-6">
                 <div className="space-y-4 group">
-                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Email Administrator</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1 block">Email Administrator</label>
                   <div className="relative">
+                    <span className="absolute left-6 top-1/2 -translate-y-1/2 material-symbols-outlined text-zinc-500 text-xl transition-colors group-focus-within:text-primary">alternate_email</span>
                     <input 
-                      type="email"
-                      required
-                      name="login_identifier_v2"
+                      type="text"
+                      id={uId}
+                      name={nName}
                       autoComplete="off"
-                      className={`w-full px-6 py-4 rounded-2xl outline-none border transition-all font-bold ${
-                        theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:bg-white focus:border-green-500'
+                      className={`w-full pl-14 pr-6 py-4 rounded-2xl outline-none border transition-all font-bold ${
+                        theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:bg-white focus:border-primary'
                       }`}
-                      placeholder="admin@wahanadata.com"
+                      placeholder="Masukkan email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleLogin(e as any)}
                     />
-                    <span className="absolute right-6 top-1/2 -translate-y-1/2 material-symbols-outlined text-zinc-500 text-xl">alternate_email</span>
                   </div>
                 </div>
 
                 <div className="space-y-4 group">
-                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Kata Sandi</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1 block">Kata Sandi</label>
                   <div className="relative">
+                    <span className="absolute left-6 top-1/2 -translate-y-1/2 material-symbols-outlined text-zinc-500 text-xl transition-colors group-focus-within:text-primary">lock</span>
                     <input 
-                      type="password"
-                      required
-                      name="security_key_v2"
+                      type="text"
+                      id={pId}
+                      name={sName}
                       autoComplete="new-password"
-                      className={`w-full px-6 py-4 rounded-2xl outline-none border transition-all font-bold ${
-                        theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:bg-white focus:border-green-500'
+                      style={{ WebkitTextSecurity: 'disc' } as any}
+                      className={`w-full pl-14 pr-6 py-4 rounded-2xl outline-none border transition-all font-bold ${
+                        theme === 'dark' ? 'bg-zinc-950 border-zinc-800 focus:border-primary text-white' : 'bg-gray-50 border-gray-100 focus:bg-white focus:border-primary'
                       }`}
-                      placeholder="••••••••"
+                      placeholder="Masukkan kata sandi"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleLogin(e as any)}
                     />
-                    <span className="absolute right-6 top-1/2 -translate-y-1/2 material-symbols-outlined text-zinc-500 text-xl">lock</span>
                   </div>
                 </div>
 
                 {error && (
-                  <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 animate-shake">
+                  <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
                     <span className="material-symbols-outlined text-lg">error</span>
-                    Email atau kata sandi tidak valid. Silakan coba lagi.
+                    Identitas tidak valid. Periksa kembali akses Anda.
                   </div>
                 )}
 
                 <button 
-                  type="submit"
+                  type="button"
+                  onClick={(e) => handleLogin(e as any)}
                   disabled={isLoading}
                   className="w-full py-4 bg-primary text-zinc-950 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-green-400 transition-all shadow-[0_15px_30px_rgba(21,128,61,0.2)] active:scale-95 disabled:opacity-50 mt-2"
                 >
                   {isLoading ? 'MENGOTORISASI...' : 'MASUK KE DASHBOARD'}
                 </button>
-              </form>
+              </div>
 
               <div className="mt-16 pt-12 border-t border-gray-100 dark:border-zinc-900 text-center">
                 <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">

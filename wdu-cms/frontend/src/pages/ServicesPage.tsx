@@ -92,30 +92,42 @@ export default function ServicesPage() {
             <p className="text-xl md:text-2xl text-emerald-100/70 font-medium leading-relaxed max-w-3xl mx-auto mb-12">
                {(language === 'id' && pageData?.content) ? pageData.content.split('\n\n')[0] : t('services.hero_content')}
             </p>
-            <div className="flex justify-center gap-4">
-              <div className="w-12 h-[2px] bg-primary"></div>
-              <div className="w-12 h-[2px] bg-white/20"></div>
-              <div className="w-12 h-[2px] bg-white/20"></div>
+            <div className="flex justify-center">
+              <div className="w-24 h-1 bg-primary rounded-full shadow-[0_0_15px_rgba(21,128,61,0.5)]"></div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── INTRO SECTION (TEXT) ── */}
-      <section className="relative py-24 overflow-hidden bg-white border-b border-zinc-100">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10 text-center">
-
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-emerald-950 leading-tight tracking-tighter mb-8 max-w-5xl mx-auto">
-            {(language === 'id' && pageData?.content) ? pageData.content.split('\n\n')[1] : t('services.intro_content_2')}
-          </h1>
-          <div className="w-24 h-1.5 bg-primary mx-auto mb-10"></div>
-          <p className="text-xl text-emerald-900/70 font-medium leading-relaxed max-w-3xl mx-auto">
-            {(language === 'id' && pageData?.content) ? pageData.content.split('\n\n')[2] : t('services.intro_content_3')}
-          </p>
-        </div>
+      {/* ── INTRO SECTION (GARDA STYLE - NO PHOTO) ── */}
+      <section className="py-24 bg-white relative overflow-hidden" id="intro">
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-50/50 rounded-full blur-[150px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
         
-        {/* Background Decorative */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-50 rounded-full blur-3xl opacity-30 -mr-48 -mt-48" />
+        <div className="max-w-7xl mx-auto px-8">
+           <div className="bg-zinc-50 rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.05)] border-[12px] border-emerald-900/10 relative overflow-hidden p-12 md:p-24 text-center flex flex-col items-center">
+              
+              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-emerald-100/50 border border-emerald-200/50 mb-8">
+                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                 <span className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-900">
+                    {language === 'id' ? 'Layanan Kami' : t('services.intro_badge')}
+                 </span>
+              </div>
+
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-emerald-950 leading-tight tracking-tighter mb-8 max-w-4xl">
+                 {language === 'id' 
+                   ? 'Jelajahi beragam solusi terbaik dengan menggunakan layanan kami!' 
+                   : t('services.intro_title')}
+              </h2>
+              
+              <div className="w-24 h-1.5 bg-primary mb-10"></div>
+              
+              <p className="text-xl md:text-2xl text-emerald-900/70 font-medium leading-relaxed max-w-4xl">
+                 {language === 'id' 
+                   ? 'Kami dengan senang hati siap membantu memenuhi kebutuhan Anda melalui layanan terbaik yang kami sediakan. Jangan ragu untuk mengandalkan kami dalam memberikan solusi yang tepat untuk Anda!' 
+                   : t('services.intro_desc')}
+              </p>
+           </div>
+        </div>
       </section>
 
       {/* ── GRID SECTION ── */}
@@ -154,17 +166,26 @@ export default function ServicesPage() {
       </section>
 
       {/* ── DATA IS OUR BUSINESS SECTION ── */}
-      <section className="relative py-40 overflow-hidden bg-zinc-950">
-        <div className="absolute inset-0 opacity-40">
-          <img className="w-full h-full object-cover" alt="Data Abstract" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi-Bq7GjTUt0AkhAUjMdgi23XZM1CppJs8QmjU3hymd1vM-qLjJmDNVrz2T6_NFU2cR6k48luEKgZwKECteBevCCWLbiFjnA4hrAWZ8duVFrvagWiLy_sUKC3rK3KRAyAuTWIZUE7_PxDES_XuovhFg-t6y7VHA7Fxjy0k7_VpWoDbbtOo4Na_aCCyhxG2OpeExCaGUMX5Da45AOePnSm7imbMg9hadmvbLLIaFIZZERsqwhisBpdyIkr62MiIIo-dz9m7YMjk3zg" />
+      <section className="relative py-48 overflow-hidden bg-zinc-950">
+        <div className="absolute inset-0 z-0">
+          <img 
+            className="w-full h-full object-cover opacity-20 mix-blend-overlay" 
+            alt="Data Abstract" 
+            src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/40 to-transparent"></div>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent"></div>
-        <div className="relative max-w-7xl mx-auto px-8 text-center md:text-left flex flex-col items-center md:items-start">
-          <h2 className="text-white text-7xl md:text-9xl font-black tracking-tighter mb-4 uppercase leading-none">{t('common.data_business').split(' ').slice(0,3).join(' ')}<br />{t('common.data_business').split(' ').slice(3).join(' ')}</h2>
-          <div className="h-1 w-32 bg-primary mb-8"></div>
-          <p className="text-zinc-400 text-xl max-w-2xl font-light tracking-wide leading-relaxed">
-            {pageData?.sections?.data_business_desc || t('services.data_business_desc')}
-          </p>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-8">
+           <div className="max-w-4xl">
+              <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter leading-none mb-10 uppercase opacity-90">
+                DATA IS OUR<br /><span className="text-primary">BUSINESS.</span>
+              </h2>
+              <div className="w-24 h-1 bg-primary mb-10"></div>
+              <p className="text-zinc-400 text-lg md:text-xl font-bold leading-relaxed max-w-2xl">
+                {pageData?.sections?.data_business_desc || t('services.data_business_desc')}
+              </p>
+           </div>
         </div>
       </section>
         </div>
